@@ -8,7 +8,7 @@ function App() {
       <header className="App-header">
         <h1>High School Scheduler</h1>
         <p>
-          An course scheduling system for the future.
+          A course scheduling system for the future.
         </p>
       </header>
     </div>
