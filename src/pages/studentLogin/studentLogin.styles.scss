@@ -1,0 +1,14 @@
+body {
+    font-family: 'Nunito', sans-serif;
+  }
+  
+.studentLogin {
+    margin-top: 200px;
+    text-align: center;
+
+    .loginCard {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+}
