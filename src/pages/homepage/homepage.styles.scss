@@ -1,0 +1,37 @@
+@-webkit-keyframes fadeEffect {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+@keyframes fadeEffect {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+.homepage {
+    margin-top: 100px;
+    text-align: center;
+    font-family: 'Nunito', sans-serif;
+
+    .title {
+        font-size: 70px;
+    }
+    .subtitle {
+        -webkit-animation: fadeEffect 3s;
+        animation: fadeEffect 3s; 
+        font-size: 20px;
+        color: rgb(78, 76, 76);
+    }
+    
+    img {
+        width: 500px;
+        height: auto;
+    }
+    
+    button {
+        margin: 75px;
+        padding: 10px;
+        font-family: inherit;
+        box-shadow: 0 .375em .313em -0.313em rgba(0,0,0,.8), inset 0 .063em rgba(255,255,255,.4), inset 0 -0.188em rgba(0,0,0,.15);
+        cursor: pointer;
+    }   
+}
