@@ -1,0 +1,23 @@
+.infoTable {
+    text-align: left;
+    margin: 25px;
+}
+
+.infoTables {
+    display: inline-flex;
+    margin: 25px;   
+}
+
+.smallCard {
+    width: '25rem';
+}
+
+.bigCard {
+    width: '75rem';
+    height:500px;;
+    margin: 10px;
+}
+
+.scrollTable{
+    overflow: scroll;
+}
