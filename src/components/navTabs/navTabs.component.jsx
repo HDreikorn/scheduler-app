@@ -1,18 +1,18 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import { Nav } from 'react-bootstrap';
 
 class NavTab extends Component {
-
     render() {
         var info = "/students/" + this.props.studentId;
         var catalog = "/students/" + this.props.studentId + "/courseCatalog";
         return (
             <Nav fill variant="tabs" defaultActiveKey={info}>
                 <Nav.Item>
-                    <Nav.Link href={info}>My Information</Nav.Link>
+                    <Link to={ info }>My Information</Link>
                 </Nav.Item>
                 <Nav.Item>
-                    <Nav.Link href={catalog}>Course Catalog</Nav.Link>
+                    <Link to={ catalog }>Course Catalog</Link>
                 </Nav.Item>
                 <Nav.Item>
                     <Nav.Link eventKey="link-2">Four Year Plan</Nav.Link>
