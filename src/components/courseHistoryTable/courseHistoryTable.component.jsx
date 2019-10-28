@@ -52,7 +52,7 @@ class CourseHistoryTable extends React.Component {
             return (
                 <div className='courseHistoryTable'>
                 <h1>{ title }</h1>
-                    <Table>
+                    <Table striped bordered hover>
                         <thead>
                             <tr>
                                 <th>Name</th>

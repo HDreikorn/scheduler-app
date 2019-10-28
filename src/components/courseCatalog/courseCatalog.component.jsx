@@ -49,7 +49,7 @@ class CourseCatalog extends React.Component {
             return (
                 <div className='courseCatalog'>
                 <h1>Course Catalog</h1>
-                    <Table>
+                    <Table striped bordered hover>
                         <thead>
                             <tr>
                                 <th>Course Code</th>
