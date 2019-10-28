@@ -7,6 +7,7 @@ import StudentDash from './pages/studentDash/studentDash.component';
 import StudentLogin from './pages/studentLogin/studentLogin.component';
 import AdminLogin from './pages/adminLogin/adminLogin.component';
 import AdminDash from './pages/adminDash/adminDash.component';
+import StudentCourseCatalog from './pages/courseCatalog/courseCatalog.component';
 
 
 function App() {
@@ -16,7 +17,8 @@ function App() {
         <Route exact path='/' component={Homepage} />
         <Route exact path='/students/login' component={StudentLogin} />
         <Route path='/schoolAdmin/login' component={AdminLogin} />
-        <Route path='/students/:studentId' component={StudentDash} />
+        <Route exact path='/students/:studentId' component={StudentDash} />
+        <Route exact path='/students/:studentId/courseCatalog' component={StudentCourseCatalog} />
         <Route path='/schoolAdmin/:username' component={AdminDash} />
       </Switch>
     </div>
