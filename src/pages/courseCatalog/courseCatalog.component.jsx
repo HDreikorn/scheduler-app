@@ -2,12 +2,12 @@ import React from 'react';
 import {Button} from 'react-bootstrap';
 import NaviBar from '../../components/navbar/navbar.component';
 import NavTab from '../../components/navTabs/navTabs.component';
-import InfoTable from '../../components/infoTable/infoTable.component';
-import './studentDash.styles.scss';
+import CourseCatalog from '../../components/courseCatalog/courseCatalog.component';
+import './courseCatalog.styles.scss';
 
-class StudentDash extends React.Component {
+class StudentCourseCatalog extends React.Component {
     constructor(props) {
-        super(props);
+        super(props); 
         this.state = {
             studentId: props.match.params.studentId,
             firstName: '',
@@ -38,16 +38,18 @@ class StudentDash extends React.Component {
         const { studentId, firstName, lastName,
                 grade} = this.state;
         var user = firstName + " " + lastName;
-            return (
-                <div className='studentDash'>
-                    <NaviBar username= {user} grade= {grade} studentId={ studentId }/>
-                    <h1>Hello, { firstName}! Let's get your schedule planning started.</h1>
-                    <Button variant="info" onClick={() => this.props.history.push('/')}>Logout</Button>
-                    <NavTab studentId={ studentId }/>
-                    <InfoTable studentId={ studentId }/>
+        return (
+            <div className='studentDash'>
+                <NaviBar username= {user} grade= {grade} studentId={ studentId }/>
+                <h1>Hello, { firstName}! Let's get you're schedule planning started.</h1>
+                <Button variant="info" onClick={() => this.props.history.push('/')}>Logout</Button>
+                <NavTab studentId={ studentId }/>
+                <div className='courseCatalog'>
+                    <CourseCatalog studentId={ studentId }/>
                 </div>
-            );
+            </div>
+        );
     }
 }
 
-export default StudentDash;
+export default StudentCourseCatalog;
