@@ -25,7 +25,7 @@ class CourseCatalog extends React.Component {
 
     renderTableData(coursesToRender) {
         return coursesToRender.map((course, index) => {
-           const { courseId, courseCode, courseName, courseSubject, courseDescription, courseCredit } = course //destructuring
+           const { courseId, courseCode, courseName, courseSubject, courseDescription, courseCredit, gradesAllowedToRegister } = course //destructuring
            return (
               <tr key={courseId}>
                  <td>{courseCode}</td>
@@ -33,6 +33,7 @@ class CourseCatalog extends React.Component {
                  <td>{courseSubject}</td>
                  <td>{courseDescription}</td>
                  <td>{courseCredit}</td>
+                 <td>{gradesAllowedToRegister}</td>
               </tr>
            )
         })
@@ -67,6 +68,7 @@ class CourseCatalog extends React.Component {
                                 <th>Subject</th>
                                 <th>Description</th>
                                 <th>Credit</th>
+                                <th>For Grades</th>
                             </tr>
                         </thead>
                         <tbody>
