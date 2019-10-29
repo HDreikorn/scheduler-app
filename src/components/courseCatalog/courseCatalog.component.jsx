@@ -1,11 +1,13 @@
 import React from 'react';
 import { Table } from 'react-bootstrap';
+import SearchBox from '../searchBox/searchBox.component';
 
 class CourseCatalog extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            courses: []
+            courses: [], 
+            searchfield: ''
         }
     }
 
@@ -21,8 +23,8 @@ class CourseCatalog extends React.Component {
     }
 
 
-    renderTableData() {
-        return this.state.courses.map((course, index) => {
+    renderTableData(coursesToRender) {
+        return coursesToRender.map((course, index) => {
            const { courseId, courseCode, courseName, courseSubject, courseDescription, courseCredit } = course //destructuring
            return (
               <tr key={courseId}>
@@ -36,8 +38,15 @@ class CourseCatalog extends React.Component {
         })
      }
 
+     onSearchChange = (event) => {
+        this.setState({searchfield: event.target.value})
+    }
+
     render() {
-        const {courses } = this.state;
+        const {courses, searchfield } = this.state;
+        const filteredCourses = courses.filter(course => {
+            return course.courseName.toLowerCase().includes(searchfield.toLocaleLowerCase());
+        })
         if (courses.length === 0){
             return (
             <div className='courseCatalog'>
@@ -48,6 +57,7 @@ class CourseCatalog extends React.Component {
         else {
             return (
                 <div className='courseCatalog'>
+                <SearchBox searchChange={this.onSearchChange}/>
                 <h1>Course Catalog</h1>
                     <Table striped bordered hover>
                         <thead>
@@ -60,7 +70,7 @@ class CourseCatalog extends React.Component {
                             </tr>
                         </thead>
                         <tbody>
-                            { this.renderTableData() }
+                            { this.renderTableData(filteredCourses) }
                         </tbody>
                     </Table>
                 </div>
