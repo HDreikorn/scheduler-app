@@ -1,12 +1,13 @@
 import React from 'react';
+import { checkPropTypes } from 'prop-types';
 
-const SearchBox = ({searchfield, searchChange}) => {
+const SearchBox = ({searchChange, searchBy}) => {
     return (
         <div className='pa2'>
             <input
                 className='searchBox'
                 type='search'
-                placeholder= 'search by course name'
+                placeholder= {searchBy}
                 onChange={searchChange}
             />
         </div>

@@ -7,7 +7,8 @@ class CourseCatalog extends React.Component {
         super(props);
         this.state = {
             courses: [], 
-            searchfield: ''
+            searchfield: '',
+            searchGradefield: ''
         }
     }
 
@@ -43,9 +44,16 @@ class CourseCatalog extends React.Component {
         this.setState({searchfield: event.target.value})
     }
 
+    onSearchGradeChange = (event) => {
+        this.setState({searchGradefield: event.target.value})
+    }
+
     render() {
-        const {courses, searchfield } = this.state;
-        const filteredCourses = courses.filter(course => {
+        const {courses, searchfield, searchGradefield } = this.state;
+        const filteredCourses = courses.filter(course => { 
+            if (searchfield.includes("9") || searchfield.includes("10") || searchfield.includes("11") || searchfield.includes("12")) {
+                return course.gradesAllowedToRegister.includes(searchfield);
+            }
             return course.courseName.toLowerCase().includes(searchfield.toLocaleLowerCase());
         })
         if (courses.length === 0){
@@ -58,7 +66,8 @@ class CourseCatalog extends React.Component {
         else {
             return (
                 <div className='courseCatalog'>
-                <SearchBox searchChange={this.onSearchChange}/>
+                <SearchBox searchChange={this.onSearchChange} searchBy='Search by Name'/>
+                <SearchBox searchChange={this.onSearchChange} searchBy='Search by Grade'/>
                 <h1>Course Catalog</h1>
                     <Table striped bordered hover>
                         <thead>
@@ -68,7 +77,7 @@ class CourseCatalog extends React.Component {
                                 <th>Subject</th>
                                 <th>Description</th>
                                 <th>Credit</th>
-                                <th>For Grades</th>
+                                <th>Available For Grades</th>
                             </tr>
                         </thead>
                         <tbody>
