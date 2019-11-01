@@ -7,8 +7,7 @@ class CourseCatalog extends React.Component {
         super(props);
         this.state = {
             courses: [], 
-            searchfield: '',
-            searchGradefield: ''
+            searchfield: ''
         }
     }
 
@@ -44,12 +43,8 @@ class CourseCatalog extends React.Component {
         this.setState({searchfield: event.target.value})
     }
 
-    onSearchGradeChange = (event) => {
-        this.setState({searchGradefield: event.target.value})
-    }
-
     render() {
-        const {courses, searchfield, searchGradefield } = this.state;
+        const {courses, searchfield } = this.state;
         const filteredCourses = courses.filter(course => { 
             if (searchfield.includes("9") || searchfield.includes("10") || searchfield.includes("11") || searchfield.includes("12")) {
                 return course.gradesAllowedToRegister.includes(searchfield);

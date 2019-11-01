@@ -6,8 +6,9 @@ class NavTab extends Component {
     render() {
         var info = "/students/" + this.props.studentId;
         var catalog = "/students/" + this.props.studentId + "/courseCatalog";
+        var register = "/students/" + this.props.studentId + "/register"
         return (
-            <Nav fill variant="tabs" defaultActiveKey={info}>
+            <Nav fill variant="tabs" defaultActiveKey="link-1">
                 <Nav.Item>
                     <Link to={ info }>My Information</Link>
                 </Nav.Item>
@@ -15,7 +16,7 @@ class NavTab extends Component {
                     <Link to={ catalog }>Course Catalog</Link>
                 </Nav.Item>
                 <Nav.Item>
-                    <Nav.Link eventKey="link-2">Four Year Plan</Nav.Link>
+                    <Link to={ register }>Registration</Link>
                 </Nav.Item>
                 <Nav.Item>
                     <Nav.Link eventKey="link-3">My Schedule</Nav.Link>
