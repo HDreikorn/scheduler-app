@@ -49,7 +49,7 @@ class RegistrationForm extends React.Component {
                     <Button variant="info" onClick={() => this.props.history.push('/')}>Logout</Button>
                     <NavTab studentId={ studentId }/>
                     <h1>Register for courses:</h1>
-                    <RegistrationTable/>
+                    <RegistrationTable studentId={ studentId }/>
                     
                 </div>
             );

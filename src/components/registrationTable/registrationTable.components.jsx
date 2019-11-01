@@ -1,6 +1,8 @@
 import React from 'react';
+import axios from 'axios';
 import { Table, ListGroup, Card, Button, Alert } from 'react-bootstrap';
 import SearchBox from '../searchBox/searchBox.component';
+import { continueStatement } from '@babel/types';
 
 class RegistrationTable extends React.Component {
     constructor(props) {
@@ -37,7 +39,7 @@ class RegistrationTable extends React.Component {
 
     renderTableData(coursesToRender) {
         return coursesToRender.map((course, index) => {
-           const { courseId, courseCode, courseName, courseSubject, courseCredit, courseCapacity, slotsAvailable } = course //destructuring
+           const { courseId, courseCode, courseName, courseSubject, courseCredit, courseCapacity, slotsAvailable } = course; //destructuring
            return (
               <tr key={courseId}>
                  <td>{courseCode}</td>
@@ -109,15 +111,34 @@ class RegistrationTable extends React.Component {
         this.setState({searchfield: event.target.value})
     }
 
-    submitHandler = (event) => {
+    submitCourses = (event) => {
         event.preventDefault();
+        // Convert chosen course ids in JSON object
+        var jsonIds = JSON.stringify(this.state.chosenCourseIds);
+        console.log(jsonIds);
+        // Axios call to send choseCourseIds state object
+        axios.post('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/students/' + this.props.studentId + '/courseRequest', jsonIds)
+    .then(response => {
+        alert("Successfully submited.");
+        //var location = '/students/'+ response.data.studentId;
+        //this.props.history.push(location);
+    })
+    .catch(error => {
+        console.log(error.response);
+        if(error.response.status === 400) {
+            alert("Request already made. Please go to modify your current request.");
+        }
+        else {
+            alert("Something went wrong.");
+        }
+        //var location = '/students/' + this.props.studentId;
+        //this.props.history.push(location);
+    })
     }
 
     renderListGroup = (chosenCourseNames) => {
         var listItems = [];
         const { count } = this.state;
-        console.log(chosenCourseNames);
-        console.log(this.state.chosenCourseNames);
         chosenCourseNames.forEach(element => {
             listItems.push(<ListGroup.Item key={element}>{element}</ListGroup.Item>)
         }); 
@@ -150,7 +171,7 @@ class RegistrationTable extends React.Component {
                             { this.renderListGroup(chosenCourseNames) }
                         </ListGroup>
                     </Card>
-                    <Button variant="info">Submit</Button>
+                    <Button variant="info" onClick={this.submitCourses}>Submit</Button>
                 </div>   
             );
         }
