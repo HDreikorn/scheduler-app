@@ -2,7 +2,6 @@ import React from 'react';
 import axios from 'axios';
 import { Table, ListGroup, Card, Button, Alert } from 'react-bootstrap';
 import SearchBox from '../searchBox/searchBox.component';
-import { continueStatement } from '@babel/types';
 
 class RegistrationTable extends React.Component {
     constructor(props) {
@@ -11,6 +10,7 @@ class RegistrationTable extends React.Component {
             courses: [], 
             searchfield: '',
             count: 0,
+            hasSubmited: this.props.hasSubmited,
             chosenCourseNames: [],
             chosenCourseIds: {
                 course1: "",
@@ -111,6 +111,10 @@ class RegistrationTable extends React.Component {
         this.setState({searchfield: event.target.value})
     }
 
+    handleModify = (event) => {
+        event.preventDefault();
+    }
+
     submitCourses = (event) => {
         event.preventDefault();
         // Convert chosen course ids in JSON object
@@ -120,6 +124,9 @@ class RegistrationTable extends React.Component {
         axios.post('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/students/' + this.props.studentId + '/courseRequest', jsonIds)
     .then(response => {
         alert("Successfully submited.");
+        this.setState({hasSubmited: true});
+        //var location = '/students/'+ response.data.studentId;
+        //<Redirect to={location}/>
         //var location = '/students/'+ response.data.studentId;
         //this.props.history.push(location);
     })
@@ -127,18 +134,16 @@ class RegistrationTable extends React.Component {
         console.log(error.response);
         if(error.response.status === 400) {
             alert("Request already made. Please go to modify your current request.");
+            this.setState({hasSubmited: true});
         }
         else {
             alert("Something went wrong.");
         }
-        //var location = '/students/' + this.props.studentId;
-        //this.props.history.push(location);
     })
     }
 
     renderListGroup = (chosenCourseNames) => {
         var listItems = [];
-        const { count } = this.state;
         chosenCourseNames.forEach(element => {
             listItems.push(<ListGroup.Item key={element}>{element}</ListGroup.Item>)
         }); 
@@ -146,7 +151,7 @@ class RegistrationTable extends React.Component {
     }
 
     render() {
-        const {courses, searchfield, chosenCourseNames, count } = this.state;
+        const {courses, searchfield, chosenCourseNames, count, hasSubmited } = this.state;
         const filteredCourses = courses.filter(course => { 
             return course.courseName.toLowerCase().includes(searchfield.toLocaleLowerCase());
         })
@@ -156,6 +161,21 @@ class RegistrationTable extends React.Component {
                 <p>Registration form is not available.</p>
             </div>
             );
+        }
+        else if (hasSubmited) {
+            return (
+                <div className='courseCatalog'>
+                    <p>Courses submitted click below to modify.</p>
+                    {/* Needs a component to get the already submited courses, then show. */}
+                    <Card style={{ width: '18rem' }}>
+                        <Card.Header>Selected Courses</Card.Header>
+                        <ListGroup variant="flush">
+                            { this.renderListGroup(chosenCourseNames) }
+                        </ListGroup>
+                    </Card>
+                    <Button variant="info" onClick={this.handleModify}>Modify Courses</Button>
+                </div>
+                );
         }
         else if (count >= 8) {
             return (

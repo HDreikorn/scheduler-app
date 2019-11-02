@@ -11,7 +11,8 @@ class RegistrationForm extends React.Component {
             studentId: props.match.params.studentId,
             firstName: '',
             lastName: '',
-            grade: ''
+            grade: '', 
+            hasCompletedCourseRequest: false
         }
     }
 
@@ -24,9 +25,11 @@ class RegistrationForm extends React.Component {
         + this.props.match.params.studentId)
         .then( response => response.json())
         .then(data => {
-           this.setState({firstName: data.firstName});
-           this.setState({lastName: data.lastName});
+           this.setState({firstName: data.firstName})
+           this.setState({lastName: data.lastName})
            this.setState({grade: data.gradeLevelString})
+           this.setState({hasCompletedCourseRequest: data.hasCompletedCourseRequest})
+           
         })
         .catch( error => {
            console.log(error);
@@ -40,16 +43,15 @@ class RegistrationForm extends React.Component {
 
     render() {
         const { studentId, firstName, lastName,
-                grade} = this.state;
+                grade, hasCompletedCourseRequest} = this.state;
         var user = firstName + " " + lastName;
             return (
                 <div className='studentDash'>
                     <NaviBar username= {user} grade= {grade} studentId={ studentId }/>
-                    <h1>Hello, { firstName}! Let's get your schedule planning started.</h1>
+                    <h1>Hello, { firstName }! Let's get your schedule planning started.</h1>
                     <Button variant="info" onClick={() => this.props.history.push('/')}>Logout</Button>
                     <NavTab studentId={ studentId }/>
-                    <h1>Register for courses:</h1>
-                    <RegistrationTable studentId={ studentId }/>
+                    <RegistrationTable studentId={ studentId } hasSubmited= {hasCompletedCourseRequest}/>
                     
                 </div>
             );
