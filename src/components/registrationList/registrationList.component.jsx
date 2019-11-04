@@ -31,7 +31,7 @@ class RegistrationList extends React.Component {
                             key={i}
                             openRegistration= {registrations[i].openRegistration}
                             closeRegistration= {registrations[i].closeRegistration}
-                            grade= {registrations[i].grade}
+                            grade= {registrations[i].gradeLevelInt}
                         />
                     );
                    

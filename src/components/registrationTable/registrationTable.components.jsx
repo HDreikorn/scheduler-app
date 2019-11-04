@@ -2,12 +2,14 @@ import React from 'react';
 import axios from 'axios';
 import { Table, ListGroup, Card, Button, Alert } from 'react-bootstrap';
 import SearchBox from '../searchBox/searchBox.component';
+import ModifyRequest from '../modifyCourseForm/modifyCourseForm.component';
 
 class RegistrationTable extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            courses: [], 
+            courses: [],
+            courseRequest: [], 
             searchfield: '',
             count: 0,
             hasSubmited: this.props.hasSubmited,
@@ -26,10 +28,21 @@ class RegistrationTable extends React.Component {
     }
 
     componentDidMount() {
+        // Get course data
         fetch('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/courses/registration')
          .then( response => response.json())
          .then(data => {
             this.setState({courses: data});
+         })
+         .catch( error => {
+            console.log(error);
+         })
+         // Get info of students who have registered for their courses
+         fetch('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/students/' + this.props.studentId + '/courserequest')
+         .then( response => response.json())
+         .then(data => {
+            this.setState({courseRequest: data.courseRequest});
+            this.setState({hasSubmited: true});
          })
          .catch( error => {
             console.log(error);
@@ -125,10 +138,6 @@ class RegistrationTable extends React.Component {
     .then(response => {
         alert("Successfully submited.");
         this.setState({hasSubmited: true});
-        //var location = '/students/'+ response.data.studentId;
-        //<Redirect to={location}/>
-        //var location = '/students/'+ response.data.studentId;
-        //this.props.history.push(location);
     })
     .catch(error => {
         console.log(error.response);
@@ -151,7 +160,7 @@ class RegistrationTable extends React.Component {
     }
 
     render() {
-        const {courses, searchfield, chosenCourseNames, count, hasSubmited } = this.state;
+        const {courses, searchfield, chosenCourseNames, count, hasSubmited} = this.state;
         const filteredCourses = courses.filter(course => { 
             return course.courseName.toLowerCase().includes(searchfield.toLocaleLowerCase());
         })
@@ -166,14 +175,9 @@ class RegistrationTable extends React.Component {
             return (
                 <div className='courseCatalog'>
                     <p>Courses submitted click below to modify.</p>
-                    {/* Needs a component to get the already submited courses, then show. */}
-                    <Card style={{ width: '18rem' }}>
-                        <Card.Header>Selected Courses</Card.Header>
-                        <ListGroup variant="flush">
-                            { this.renderListGroup(chosenCourseNames) }
-                        </ListGroup>
-                    </Card>
-                    <Button variant="info" onClick={this.handleModify}>Modify Courses</Button>
+                    <div style={{ display: 'flex' }}>
+                        <ModifyRequest courses={courses} studentId={this.props.studentId}/>
+                    </div>
                 </div>
                 );
         }
