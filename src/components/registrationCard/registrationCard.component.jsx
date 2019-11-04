@@ -17,7 +17,7 @@ class RegistrationCard extends React.Component {
             <Card style={{ width: '18rem', margin: '15px' }}>
             <Card.Header>Current Registration Window</Card.Header>
             <Card.Body>
-                <Card.Title>Registration times for grade { grade }.</Card.Title>
+                <Card.Title>Registration times for { grade }th grade.</Card.Title>
                 <Card.Text>
                 {openRegistration} to { closeRegistration }
                 </Card.Text>
