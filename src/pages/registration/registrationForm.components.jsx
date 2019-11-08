@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Form, Card} from 'react-bootstrap';
+import {Button} from 'react-bootstrap';
 import NaviBar from '../../components/navbar/navbar.component';
 import NavTab from '../../components/navTabs/navTabs.component';
 import RegistrationTable from '../../components/registrationTable/registrationTable.components';
@@ -12,6 +12,7 @@ class RegistrationForm extends React.Component {
             firstName: '',
             lastName: '',
             grade: '', 
+            gradeInt: '',
             hasCompletedCourseRequest: false
         }
     }
@@ -28,6 +29,7 @@ class RegistrationForm extends React.Component {
            this.setState({firstName: data.firstName})
            this.setState({lastName: data.lastName})
            this.setState({grade: data.gradeLevelString})
+           this.setState({gradeInt: data.gradeLevelInt})
            this.setState({hasCompletedCourseRequest: data.hasCompletedCourseRequest})
            
         })
@@ -45,17 +47,16 @@ class RegistrationForm extends React.Component {
         const { studentId, firstName, lastName,
                 grade, hasCompletedCourseRequest} = this.state;
         var user = firstName + " " + lastName;
-            return (
-                <div className='studentDash'>
-                    <NaviBar username= {user} grade= {grade} studentId={ studentId }/>
-                    <h1>Hello, { firstName }! Let's get your schedule planning started.</h1>
-                    <Button variant="info" onClick={() => this.props.history.push('/')}>Logout</Button>
-                    <NavTab studentId={ studentId }/>
-                    <RegistrationTable studentId={ studentId } hasSubmited= {hasCompletedCourseRequest}/>
-                    
-                </div>
-            );
+        return (
+            <div className='studentDash'>
+                <NaviBar username= {user} grade= {grade} studentId={ studentId }/>
+                <h1>Hello, { firstName }! Let's get your schedule planning started.</h1>
+                <Button variant="info" onClick={() => this.props.history.push('/')}>Logout</Button>
+                <NavTab studentId={ studentId }/>
+                <RegistrationTable studentId={ studentId } hasSubmited= {hasCompletedCourseRequest}/>
+            </div>
+        );
     }
-}
+}           
 
 export default RegistrationForm;
