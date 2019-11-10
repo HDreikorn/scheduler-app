@@ -49,7 +49,7 @@ class CreditTable extends React.Component {
             return (
                 <div className='subjectSummaries'>
                 <h1>{ title }</h1>
-                    <Table>
+                    <Table striped bordered hover>
                         <thead>
                             <tr>
                                 <th>Subject</th>
