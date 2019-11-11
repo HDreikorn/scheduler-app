@@ -34,10 +34,6 @@ class RegistrationTable extends React.Component {
             fineArtsCredits: "",
             languageCredits: "",
             classSet: this.props.classSet
-            // freshmanSet: this.props.freshmanSet,
-            // sophmoreSet: this.props.sophmoreSet,
-            // juniorSet : this.props.juniorSet,
-            // seniorSet : this.props.seniorSet
         }
     }
 
@@ -57,7 +53,7 @@ class RegistrationTable extends React.Component {
             this.setState({fineArtsCredits: data.fineArtsSummary.creditsNeeded});
             this.setState({electiveCredits: data.electiveSummary.creditsNeeded});
             this.setState({languageCredits: data.languageSummary.creditsNeeded});
-            this.getClassSet(this.state.gradeLevel)
+            this.getClassSet(this.state.gradeLevel);
          })
          .catch( error => {
             console.log(error);
@@ -78,7 +74,7 @@ class RegistrationTable extends React.Component {
         var freshmanSet = new Map([["English", 1], ["Math", 1], ["Science", 1], ["Language", 1], ["Physical Education", 1], ["Health", 1], ["Fine Arts", 1], ["Electives", 2]]);
         var sophmoreSet = new Map([["English", 1], ["Math", 1], ["Science", 1], ["Language", 1], ["Social Science", 1], ["Physical Education", 1], ["Health", 1], ["Fine Arts", 1], ["Electives", 2]]);
         var juniorSet = new Map([["English", 1], ["Math", 1], ["Science", 1], ["Language", 1], ["Social Science", 1], ["Physical Education", 1], ["Health", 1], ["Fine Arts", 1], ["Electives", 2]]);
-        var seniorSet = new Map([["English", 1], ["Math", 1], ["Science", 1], ["Social Science", 1], ["Physical Education", 1], ["Health", 1], ["Fine Arts", 1], ["Electives", 2]]);
+        var seniorSet = new Map([["English", 1], ["Math", 1], ["Science", 2], ["Social Science", 1], ["Physical Education", 1], ["Health", 1], ["Fine Arts", 1], ["Electives", 2]]);
         if (gradeInt === 9 ) {
             this.setState({classSet:freshmanSet});
         }
@@ -112,7 +108,6 @@ class RegistrationTable extends React.Component {
      validateCourseChoice = (courseSubject) => {
          const {classSet} = this.state;
          var isValid = false;
-        console.log(classSet);
          // Go through class set if in there and greater than zero, it is valid.
         classSet.forEach(function(value, key) {
             if(key === courseSubject && value > 0) {
@@ -168,19 +163,13 @@ class RegistrationTable extends React.Component {
                 return false;
             }
             else {
-                if (courseCredit > languageCredits) {
-                    alert("Not a valid choice. You have fulfilled all credits in this subject.");
-                    return false;
+                if(this.validateCourseChoice(courseSubject)) {
+                    this.setState({electiveCredits: electiveCredits - courseCredit});
+                    return true;
                 }
-                else {
-                    if(this.validateCourseChoice(courseSubject)) {
-                        this.setState({electiveCredits: electiveCredits - courseCredit});
-                        return true;
-                    }
-                    else{
-                        alert("Choose another course to add. Make sure to add all core courses.");
-                        return false;
-                    }
+                else{
+                    alert("Choose another course to add. Make sure to add all core courses.");
+                    return false;
                 }
             }
         }
@@ -190,19 +179,13 @@ class RegistrationTable extends React.Component {
                 return false;
             }
             else {
-                if (courseCredit > languageCredits) {
-                    alert("Not a valid choice. You have fulfilled all credits in this subject.");
-                    return false;
+                if(this.validateCourseChoice(courseSubject)) {
+                    this.setState({mathCredits: mathCredits - courseCredit});
+                    return true;
                 }
-                else {
-                    if(this.validateCourseChoice(courseSubject)) {
-                        this.setState({mathCredits: mathCredits - courseCredit});
-                        return true;
-                    }
-                    else{
-                        alert("Choose another course to add. Make sure to add all core courses.");
-                        return false;
-                    }
+                else{
+                    alert("Choose another course to add. Make sure to add all core courses.");
+                    return false;
                 }
             }    
         }
@@ -212,19 +195,13 @@ class RegistrationTable extends React.Component {
                 return false;
             }
             else {
-                if (courseCredit > languageCredits) {
-                    alert("Not a valid choice. You have fulfilled all credits in this subject.");
-                    return false;
+                if(this.validateCourseChoice(courseSubject)) {
+                    this.setState({physEdCredits: physEdCredits - courseCredit});
+                    return true;
                 }
-                else {
-                    if(this.validateCourseChoice(courseSubject)) {
-                        this.setState({physEdCredits: physEdCredits - courseCredit});
-                        return true;
-                    }
-                    else{
-                        alert("Choose another course to add. Make sure to add all core courses.");
-                        return false;
-                    }
+                else{
+                    alert("Choose another course to add. Make sure to add all core courses.");
+                    return false;
                 }
             }
         }
@@ -295,10 +272,16 @@ class RegistrationTable extends React.Component {
      }
 
     addClassToList(courseId, courseName, courseSubject, courseCredit) {
-        var canAdd = this.validateChosenSubjectCredit(courseSubject, courseCredit);
+        const {chosenCourseIds, count, chosenCourseNames} = this.state;
+        var canAdd = false;
+        if(count > 6) {
+            canAdd = true;
+        }
+        else {
+            canAdd = this.validateChosenSubjectCredit(courseSubject, courseCredit);
+        }
 
-        if(canAdd) {
-            const {chosenCourseIds, count, chosenCourseNames} = this.state;
+        if(canAdd) {   
         // Get the course ids state to modify
         var courseIds = chosenCourseIds;
         // Check what count is at, then modify the course based on the count
@@ -374,7 +357,6 @@ class RegistrationTable extends React.Component {
             this.setState({hasSubmited: true});
         })
         .catch(error => {
-            console.log(error.response);
             if(error.response.status === 400) {
                 alert("Request already made. Please go to modify your current request.");
                 this.setState({hasSubmited: true});
