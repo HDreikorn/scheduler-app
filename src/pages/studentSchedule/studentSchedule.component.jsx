@@ -1,7 +1,9 @@
 import React from 'react';
-import {Button} from 'react-bootstrap';
+import {Button, Card} from 'react-bootstrap';
 import NaviBar from '../../components/navbar/navbar.component';
 import NavTab from '../../components/navTabs/navTabs.component';
+import FinalScheduleTable from '../../components/finalSchedule/finalSchedule.component';
+import './studentSchedule.styles.scss'
 
 class StudentSchedule extends React.Component {
     constructor(props) {
@@ -37,12 +39,19 @@ class StudentSchedule extends React.Component {
                 grade} = this.state;
         var user = firstName + " " + lastName;
             return (
-                <div className='studentDash'>
+                <div className="studentDash">
                     <NaviBar username= {user} grade= {grade} studentId={ studentId }/>
                     <h1>Hello, { firstName}! Let's get your schedule planning started.</h1>
                     <Button variant="info" onClick={() => this.props.history.push('/')}>Logout</Button>
                     <NavTab studentId={ studentId }/>
-                    <h1>Student's Schedule</h1>
+                    <div className="finalSchedule">  
+                        <div className="centerSchedule"> 
+                            <Card style={{ width: '50rem'}} body>
+                                <FinalScheduleTable studentId={ studentId }/>
+                            </Card>
+                        </div>
+                    </div>
+                    
                 </div>
             );
     }
