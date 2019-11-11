@@ -1,0 +1,20 @@
+.courseCatalog {
+    display: flex;
+    margin-top: 25px;
+    align-items: center;
+    justify-content: center;
+    width: 100%; // make sure the parent is full screen 
+    height: 100%; // so that the content will center correctly
+}
+
+.inputArea{
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.searchBoxes {
+    margin-top: 25px;
+    display: inline-flex;
+}

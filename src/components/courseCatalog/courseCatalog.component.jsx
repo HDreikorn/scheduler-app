@@ -1,13 +1,19 @@
 import React from 'react';
-import { Table } from 'react-bootstrap';
+import { Table, Card } from 'react-bootstrap';
 import SearchBox from '../searchBox/searchBox.component';
+import FilterForm from '../filterForm/filterForm.component';
+import './courseCatalog.styles.scss';
 
 class CourseCatalog extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             courses: [], 
-            searchfield: ''
+            searchfield: '',
+            filterGrade: '',
+            filterSubject: '',
+            isFilterFetched: false,
+            filterFetchedCourses: ''
         }
     }
 
@@ -43,8 +49,22 @@ class CourseCatalog extends React.Component {
         this.setState({searchfield: event.target.value})
     }
 
+    selectChange = (event) => {
+        this.setState({filterSubject: event.target.value});
+    }
+
+    radioChange = (event) => {
+        this.setState({filterGrade: event.target.value});
+    }
+
+    onSubmitFilter = () => {
+        console.log(this.state);
+        // TODO get the input info, set the state for filtered courses
+    }
+
     render() {
-        const {courses, searchfield } = this.state;
+        const {courses, searchfield, isFilterFetched, filterFetchedCourses } = this.state;
+
         const filteredCourses = courses.filter(course => { 
             if (searchfield.includes("9") || searchfield.includes("10") || searchfield.includes("11") || searchfield.includes("12")) {
                 return course.gradesAllowedToRegister.includes(searchfield);
@@ -58,27 +78,69 @@ class CourseCatalog extends React.Component {
             </div>
             );
         }
+        else if (isFilterFetched) {
+            return (
+                <div>
+                    <div className='courseCatalog'>
+                        <div className='inputArea'>
+                            <Card body>
+                                <FilterForm selectChange={this.selectChange} radioChange={this.radioChange} onSubmitFilter={this.onSubmitFilter}/>
+                            </Card>
+                        </div>
+                    </div>
+                    <div className="searchBoxes">
+                                <SearchBox searchChange={this.onSearchChange} searchBy='Search by Name'/>
+                                <SearchBox searchChange={this.onSearchChange} searchBy='Search by Grade'/>
+                            </div>
+                    <h1>Course Catalog</h1>
+                        <Table striped bordered hover>
+                            <thead>
+                                <tr>
+                                    <th>Course Code</th>
+                                    <th>Course Name</th>
+                                    <th>Subject</th>
+                                    <th>Description</th>
+                                    <th>Credit</th>
+                                    <th>Available For Grades</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                { this.renderTableData(filterFetchedCourses) }
+                            </tbody>
+                        </Table>
+                </div>
+            );
+        }
         else {
             return (
-                <div className='courseCatalog'>
-                <SearchBox searchChange={this.onSearchChange} searchBy='Search by Name'/>
-                <SearchBox searchChange={this.onSearchChange} searchBy='Search by Grade'/>
-                <h1>Course Catalog</h1>
-                    <Table striped bordered hover>
-                        <thead>
-                            <tr>
-                                <th>Course Code</th>
-                                <th>Course Name</th>
-                                <th>Subject</th>
-                                <th>Description</th>
-                                <th>Credit</th>
-                                <th>Available For Grades</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            { this.renderTableData(filteredCourses) }
-                        </tbody>
-                    </Table>
+                <div>
+                    <div className='courseCatalog'>
+                        <div className='inputArea'>
+                            <Card body>
+                                <FilterForm selectChange={this.selectChange} radioChange={this.radioChange} onSubmitFilter={this.onSubmitFilter}/>
+                            </Card>
+                        </div>
+                    </div>
+                    <div className="searchBoxes">
+                                <SearchBox searchChange={this.onSearchChange} searchBy='Search by Name'/>
+                                <SearchBox searchChange={this.onSearchChange} searchBy='Search by Grade'/>
+                            </div>
+                    <h1>Course Catalog</h1>
+                        <Table striped bordered hover>
+                            <thead>
+                                <tr>
+                                    <th>Course Code</th>
+                                    <th>Course Name</th>
+                                    <th>Subject</th>
+                                    <th>Description</th>
+                                    <th>Credit</th>
+                                    <th>Available For Grades</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                { this.renderTableData(filteredCourses) }
+                            </tbody>
+                        </Table>
                 </div>
             );
         }
