@@ -400,14 +400,14 @@ class RegistrationTable extends React.Component {
         })
         if (courses.length === 0){
             return (
-            <div className='courseCatalog'>
+            <div className=''>
                 <p>Registration form is not available.</p>
             </div>
             );
         }
         else if (hasSubmited) {
             return (
-                <div className='courseCatalog'>
+                <div className=''>
                     <p>Courses submitted click below to modify.</p>
                     <div style={{ display: 'flex' }}>
                         <ModifyRequest courses={courses} studentId={this.props.studentId}/>
@@ -435,7 +435,7 @@ class RegistrationTable extends React.Component {
         }
         else {
             return (
-                <div className='courseCatalog'>
+                <div className=''>
                 <SearchBox searchChange={this.onSearchChange} searchBy='Search by Name'/>
                 <Card style={{ width: '18rem' }}>
                     <Card.Header>Selected Courses</Card.Header>
