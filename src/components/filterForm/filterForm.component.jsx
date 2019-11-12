@@ -18,7 +18,7 @@ class FilterForm extends React.Component{
                             <option value="sc">Science</option>
                             <option value="mth">Math</option>
                             <option value="fna">Fine Arts</option>
-                            <option value="en">Englilsh</option>
+                            <option value="en">English</option>
                             <option value="el">Elective</option>
                         </Form.Control>
                     </Form.Group>
