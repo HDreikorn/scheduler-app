@@ -1,5 +1,6 @@
 .adminDash{
     text-align: center;
+    padding-bottom: 100px;
 }
 
 h1 {
@@ -7,9 +8,21 @@ h1 {
 }
 
 .registrationBoxes {
-    display:flexbox;
+    display: inline-flex;
 }
 
 .statusCard {
     margin: 25px;
+}
+
+.logOut {
+    margin: 25px;
+}
+
+.actionButtons {
+    margin: 20px;
+
+    Button {
+        margin: 20px;
+    }
 }
