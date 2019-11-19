@@ -15,7 +15,6 @@ class RegistrationCard extends React.Component {
     }
 
     handleChange = (e) => {
-        console.log(e.target.name);
         this.setState({[e.target.name]: e.target.value});
     }
 
@@ -63,11 +62,11 @@ class RegistrationCard extends React.Component {
                 {openRegistration} to { closeRegistration }
                 </Card.Text>
                 <Form onSubmit={this.handleModify}>
-                    <Form.Group controlId="newStartDate">
+                    <Form.Group >
                         <Form.Label>New Start:</Form.Label>
                         <Form.Control autoFocus type="date" name="newStart" onChange={this.handleChange}/>
                     </Form.Group>
-                    <Form.Group controlId="newEndDate">
+                    <Form.Group >
                         <Form.Label>New End:</Form.Label>
                         <Form.Control autoFocus type="date" name="newEnd" onChange={this.handleChange}/>
                     </Form.Group>

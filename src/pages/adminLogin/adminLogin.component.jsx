@@ -18,7 +18,6 @@ class AdminLogin extends Component {
 
   submitHandler = (e) => {
     e.preventDefault();
-    console.log(this.state);
     axios.post('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/schoolAdmin/login', this.state)
     .then(response => {
         var location = '/schoolAdmin/'+ response.data.userId;

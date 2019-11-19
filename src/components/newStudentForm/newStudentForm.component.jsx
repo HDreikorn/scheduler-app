@@ -37,7 +37,8 @@ class NewStudentForm extends Component {
   }
 
   render() {
-    const { studentId, studentPassword, firstName, lastName, grade } = this.state;
+    const { studentID, studentPassword, firstName, lastName, grade } = this.state;
+
     return (
         <div className="newStudentForm">
             <h1>Fill Out New Student Information:</h1>
@@ -50,7 +51,8 @@ class NewStudentForm extends Component {
                         type="text"
                         name = "studentID"
                         placeholder="Assign student ID" 
-                        value={ studentId } 
+                        value={ studentID }
+                        autoComplete="new-ID"
                         onChange={this.changeHandler}
                         />
                     </Form.Group>
@@ -62,6 +64,7 @@ class NewStudentForm extends Component {
                         name="studentPassword"
                         placeholder="Assign Password" 
                         value={ studentPassword }
+                        autoComplete="new-password"
                         onChange={this.changeHandler}
                         />
                     </Form.Group>
