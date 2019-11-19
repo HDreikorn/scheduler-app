@@ -27,12 +27,14 @@ class RegistrationList extends React.Component {
             {
                 registrations.map((reg, i) => {
                     return (
-                        <RegistrationCard
-                            key={i}
-                            openRegistration= {registrations[i].openRegistration}
-                            closeRegistration= {registrations[i].closeRegistration}
-                            grade= {registrations[i].gradeLevelInt}
-                        />
+                        <div key={i}>
+                            <RegistrationCard
+                                key={i}
+                                openRegistration= {registrations[i].openRegistration}
+                                closeRegistration= {registrations[i].closeRegistration}
+                                grade= {registrations[i].gradeLevelInt}
+                            />
+                        </div>
                     );
                    
                 })
