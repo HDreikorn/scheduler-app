@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import { Table, Card, Button } from 'react-bootstrap';
 import SearchBox from '../searchBox/searchBox.component';
 import FilterForm from '../filterForm/filterForm.component';
@@ -29,35 +30,47 @@ class CourseCatalog extends React.Component {
     }
 
     getCoursesByGrade(grade) {
-        fetch('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/courses/filtered?grade=' + grade)
-         .then( response => response.json())
-         .then(data => {
-            this.setState({filterFetchedCourses : data});
+        axios.get('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/courses/filtered?grade=' + grade)
+         .then(response => {
+            this.setState({filterFetchedCourses : response.data});
          })
          .catch( error => {
-            console.log(error);
+            if (error.response.status === 404 ){
+                this.setState({filterFetchedCourses: []});
+            }
+            else {
+                alert(error.response.data);
+            }
          })
     }
 
     getCoursesBySubject(subject) {
-        fetch('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/courses/filtered?subject='  + subject)
-        .then( response => response.json())
-        .then(data => {
-           this.setState({filterFetchedCourses: data});
+        axios.get('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/courses/filtered?subject='  + subject)
+        .then(response => {
+           this.setState({filterFetchedCourses: response.data});
         })
         .catch( error => {
-           console.log(error);
+            if (error.response.status === 404 ){
+                this.setState({filterFetchedCourses: []});
+            }
+            else {
+                alert(error.response.data);
+            }
         })
     }
 
     getCoursesByGradeAndSubject(grade, subject) {
-        fetch('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/courses/filtered?grade=' + grade + '&subject=' + subject)
-        .then( response => response.json())
-        .then(data => {
-           this.setState({filterFetchedCourses: data});
+        axios.get('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/courses/filtered?grade=' + grade + '&subject=' + subject)
+        .then(response => {
+           this.setState({filterFetchedCourses: response.data});
         })
         .catch( error => {
-           console.log(error);
+            if(error.response.status === 404){
+                this.setState({filterFetchedCourses: []});
+            }
+            else {
+                alert("Something went wrong. Try filter again.");
+            }
         })
     }
 
@@ -108,9 +121,12 @@ class CourseCatalog extends React.Component {
 
     onSubmitFilter = () => {
         const { filterGrade, filterSubject} = this.state;
+        document.getElementById("filter-form").reset();
         if(filterGrade !== '' && filterSubject !== '') {
             this.getCoursesByGradeAndSubject(filterGrade, filterSubject);
             this.setState({isFilterFetched:true});
+            this.setState({filterSubject: ''});
+            this.setState({filterGrade: ''});
         }
         else if(filterSubject !== '') {
             this.getCoursesBySubject(filterSubject);
@@ -123,28 +139,22 @@ class CourseCatalog extends React.Component {
     }
 
     onBackToUnfilter = () => {
-        this.setState({isFilterFetched: false});
+        document.getElementById("filter-form").reset();
         this.setState({filterSubject: ''});
         this.setState({filterGrade: ''});
+        this.setState({isFilterFetched: false});
     }
 
     render() {
         const {courses, searchfield, isFilterFetched, filterFetchedCourses } = this.state;
 
         const filteredCourses = courses.filter(course => { 
-            if (searchfield.includes("9") || searchfield.includes("10") || searchfield.includes("11") || searchfield.includes("12")) {
-                return course.gradesAllowedToRegister.includes(searchfield);
-            }
-            return course.courseName.toLowerCase().includes(searchfield.toLocaleLowerCase());
-        })
-        if (courses.length === 0){
-            return (
-            <div className='courseCatalog'>
-                <p>Course catalog is not available.</p>
-            </div>
-            );
+        if (searchfield.includes("9") || searchfield.includes("10") || searchfield.includes("11") || searchfield.includes("12")) {
+            return course.gradesAllowedToRegister.includes(searchfield);
         }
-        else if (isFilterFetched) {
+        return course.courseName.toLowerCase().includes(searchfield.toLocaleLowerCase());
+        })
+        if (isFilterFetched) {
             return (
                 <div>
                     <div className='courseCatalog'>
@@ -158,23 +168,27 @@ class CourseCatalog extends React.Component {
                         <SearchBox searchChange={this.onSearchChange} searchBy='Search by Name'/>
                         <SearchBox searchChange={this.onSearchChange} searchBy='Search by Grade'/>
                     </div>
-                    <h1>Course Catalog</h1>
-                    <Button variant="danger" onClick={this.onBackToUnfilter}>Go Back to Full List</Button>
-                        <Table striped bordered hover>
-                            <thead>
-                                <tr>
-                                    <th>Course Code</th>
-                                    <th>Course Name</th>
-                                    <th>Subject</th>
-                                    <th>Description</th>
-                                    <th>Credit</th>
-                                    <th>Available For Grades</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                { this.renderFilteredTableData(filterFetchedCourses) }
-                            </tbody>
-                        </Table>
+                    <Card className="catalogBox">
+                        <Card.Header as="h5">Course Catalog</Card.Header>
+                        <Card.Body>
+                            <Button className="backButton" variant="danger" onClick={this.onBackToUnfilter}>Go Back to Full List</Button>
+                            <Table striped bordered hover>
+                                <thead>
+                                    <tr>
+                                        <th>Course Code</th>
+                                        <th>Course Name</th>
+                                        <th>Subject</th>
+                                        <th>Description</th>
+                                        <th>Credit</th>
+                                        <th>Available For Grades</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    { this.renderFilteredTableData(filterFetchedCourses) }
+                                </tbody>
+                            </Table>
+                        </Card.Body>
+                    </Card>
                 </div>
             );
         }
@@ -189,10 +203,12 @@ class CourseCatalog extends React.Component {
                         </div>
                     </div>
                     <div className="searchBoxes">
-                                <SearchBox searchChange={this.onSearchChange} searchBy='Search by Name'/>
-                                <SearchBox searchChange={this.onSearchChange} searchBy='Search by Grade'/>
+                                <SearchBox searchChange={this.onSearchChange} searchBy='Search by Name' className="searchBox"/>
+                                <SearchBox searchChange={this.onSearchChange} searchBy='Search by Grade' className="searchBox"/>
                             </div>
-                    <h1>Course Catalog</h1>
+                    <Card className="catalogBox">
+                        <Card.Header as="h5">Course Catalog</Card.Header>
+                        <Card.Body>
                         <Table striped bordered hover>
                             <thead>
                                 <tr>
@@ -205,9 +221,11 @@ class CourseCatalog extends React.Component {
                                 </tr>
                             </thead>
                             <tbody>
-                                { this.renderTableData(filteredCourses) }
+                            { this.renderTableData(filteredCourses) }
                             </tbody>
                         </Table>
+                        </Card.Body>
+                    </Card>
                 </div>
             );
         }

@@ -24,9 +24,9 @@ class AdminLogin extends Component {
         this.props.history.push(location);
     })
     .catch(error => {
-      console.log(error);
-      var location = '/'
-      this.props.history.push(location);
+      this.setState({username:''});
+      this.setState({adminPassword:''});
+      alert("Invalid login. Try again.")
     })
   }
 

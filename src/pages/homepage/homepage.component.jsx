@@ -4,6 +4,10 @@ import './homepage.styles.scss';
 import kids from './66209.jpg';
 
 class Homepage extends Component {
+   componentDidMount(){
+      fetch('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/healthcheck');
+   }
+
    render(props) {
       return (
          <div className= 'homepage'>

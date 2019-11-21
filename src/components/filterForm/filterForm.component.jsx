@@ -6,11 +6,11 @@ class FilterForm extends React.Component{
     render() {
         return (
             <div className='filterForm'>
-                <Form>
-                    <Form.Group controlId="formGridState">
+                <Form id="filter-form">
+                    <Form.Group >
                         <Form.Label>Filter by Subject</Form.Label>
                         <Form.Control as="select" onChange={this.props.selectChange}>
-                            <option>-- select a subject --</option>
+                            <option value=''>-- select a subject --</option>
                             <option value="ln">Language</option>
                             <option value="pe">Physical Education</option>
                             <option value="he">Health</option>
@@ -19,6 +19,7 @@ class FilterForm extends React.Component{
                             <option value="mth">Math</option>
                             <option value="fna">Fine Arts</option>
                             <option value="en">English</option>
+                            <option value="se">Special Education</option>
                             <option value="el">Elective</option>
                         </Form.Control>
                     </Form.Group>
