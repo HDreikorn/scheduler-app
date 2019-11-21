@@ -46,7 +46,7 @@ class CourseHistoryTable extends React.Component {
 
     renderTableData() {
         return this.state.courseHistory.map((course, index) => {
-           const { courseId, courseName, courseSubject, schoolYear, credit, courseGrade } = course //destructuring
+           const { courseId, courseName, courseSubject, schoolYear, courseGrade } = course //destructuring
            return (
               <tr key={courseId}>
                  <td>{courseName}</td>

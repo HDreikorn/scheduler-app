@@ -8,8 +8,8 @@ class RegistrationCard extends React.Component {
         this.state = {
             openRegistration: this.props.openRegistration,
             closeRegistration: this.props.closeRegistration,
-            newStart: null,
-            newEnd: null,
+            newStart: this.props.openRegistration,
+            newEnd: this.props.closeRegistration,
             grade: this.props.grade
         }
     }
@@ -19,36 +19,43 @@ class RegistrationCard extends React.Component {
     }
 
     handleModify = () => {
-        const {grade} = this.state;
+        const {newStart, newEnd, grade} = this.state;
         var newDateObject = {}
+        console.log(this.state);
         // Set up new date object based on the grade state
         if(grade === 12) {
-            newDateObject.seniorWindowOpen = this.state.newStart;
-            newDateObject.seniorWindowClose = this.state.newEnd;
+            newDateObject.seniorWindowOpen = newStart;
+            newDateObject.seniorWindowClose = newEnd;
         } 
         else if(grade === 11) {
-            newDateObject.juniorWindowOpen = this.state.newStart;
-            newDateObject.juniorWindowClose = this.state.newEnd;
+            newDateObject.juniorWindowOpen = newStart;
+            newDateObject.juniorWindowClose = newEnd;
         } 
         else if(grade === 10) {
-            newDateObject.sophmoreWindowOpen = this.state.newStart;
-            newDateObject.sophmoreWindowClose = this.state.newEnd;
+            newDateObject.sophmoreWindowOpen = newStart;
+            newDateObject.sophmoreWindowClose = newEnd;
         } 
         else if(grade === 9) {
-            newDateObject.freshmanWindowOpen = this.state.newStart;
-            newDateObject.freshmanWindowClose = this.state.newEnd;
+            newDateObject.freshmanWindowOpen = newStart;
+            newDateObject.freshmanWindowClose = newEnd;
         } 
 
         // Send axios patch request to change appropriate registration date.
         axios.patch('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/registration', JSON.stringify(newDateObject))
         .then(response => {
             console.log("success");
-            this.setState({openRegistration: this.state.newStart});
-            this.setState({closeRegistration: this.state.newEnd});
+            this.setState({openRegistration: this.formatDate(this.state.newStart)});
+            this.setState({closeRegistration: this.formatDate(this.state.newEnd)});
         })
         .catch(error => {
             console.log(error);
         })
+    }
+
+    // TODO: format the string into date
+    // maybe cast to date?
+    formatDate = (date) => {
+        console.log(typeof date);
     }
 
     render() {
