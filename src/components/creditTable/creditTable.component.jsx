@@ -49,6 +49,7 @@ class CreditTable extends React.Component {
             return (
                 <div className='subjectSummaries'>
                 <h1>{ title }</h1>
+                <p>Credits you have completed so far, which qualify you for graduation.</p>
                     <Table striped bordered hover>
                         <thead>
                             <tr>

@@ -22,11 +22,19 @@ class InfoTable extends React.Component {
          .then(data => {
             this.setState({totalCreditsEarned: data.totalCreditsEarned});
             this.setState({totalCreditsNeeded: data.totalCreditsNeeded});
-            this.setState({gpa: data.gpa});
+            this.setState({gpa: this.validateGPA(data.gpa)});
          })
          .catch( error => {
             console.log(error);
          })
+    }
+
+    validateGPA = (gpa) => {
+        console.log(gpa);
+        if(gpa === 'NaN'){
+            return 'No GPA in the system';
+        }
+        return gpa;
     }
 
     render() {
@@ -46,7 +54,7 @@ class InfoTable extends React.Component {
                 <div className='infoTables'>
                     <Card className='bigCard scrollTable'>
                             <Card.Body>
-                                <CreditTable studentId={ studentId } title="Current Course Credit Report"/>
+                                <CreditTable studentId={ studentId } title="Graduation Credits"/>
                             </Card.Body>
                     </Card>
                     <Card className='bigCard scrollTable'>

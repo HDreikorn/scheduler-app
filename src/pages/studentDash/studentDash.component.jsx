@@ -44,7 +44,6 @@ class StudentDash extends React.Component {
                     <h1>Hello, { firstName}! Let's get you're schedule planning started.
                         <Button variant="info" onClick={() => this.props.history.push('/')}>Logout</Button>
                     </h1>
-                    <Button variant="info" onClick={() => this.props.history.push('/')}>Logout</Button>
                     <NavTab studentId={ studentId }/>
                     <InfoTable studentId={ studentId }/>
                 </div>

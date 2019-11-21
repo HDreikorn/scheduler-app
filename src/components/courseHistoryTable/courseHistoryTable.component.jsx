@@ -23,6 +23,26 @@ class CourseHistoryTable extends React.Component {
          })
     }
 
+    getLetterGrade = (courseGrade) => {
+        if(courseGrade === 4) {
+            return 'A';
+        }
+        else if(courseGrade === 3) {
+            return 'B';
+        }
+        else if(courseGrade === 2) {
+            return 'C';
+        }
+        else if(courseGrade === 1) {
+            return 'D';
+        }
+        else if(courseGrade === 0) {
+            return 'F';
+        }
+        else {
+            return 'Grade Not Found';
+        }
+    }
 
     renderTableData() {
         return this.state.courseHistory.map((course, index) => {
@@ -32,8 +52,7 @@ class CourseHistoryTable extends React.Component {
                  <td>{courseName}</td>
                  <td>{courseSubject}</td>
                  <td>{schoolYear}</td>
-                 <td>{credit}</td>
-                 <td>{courseGrade}</td>
+                 <td>{this.getLetterGrade(courseGrade)}</td>
               </tr>
            )
         })
@@ -58,7 +77,6 @@ class CourseHistoryTable extends React.Component {
                                 <th>Name</th>
                                 <th>Subject</th>
                                 <th>School Year</th>
-                                <th>Credit</th>
                                 <th>Grade</th>
                             </tr>
                         </thead>
