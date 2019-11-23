@@ -24,10 +24,9 @@ class StudentLogin extends Component {
       this.props.history.push(location);
     })
     .catch(error => {
-      console.log(error);
+      this.setState({studentId:''});
+      this.setState({studentPassword:''});
       alert("Invalid login. Try again.");
-      var location = '/'
-      this.props.history.push(location);
     })
   }
 
