@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button} from 'react-bootstrap';
+import {Button, Spinner} from 'react-bootstrap';
 import NaviBar from '../../components/navbar/navbar.component';
 import NavTab from '../../components/navTabs/navTabs.component';
 import RegistrationTable from '../../components/registrationTable/registrationTable.components';
@@ -13,12 +13,16 @@ class RegistrationForm extends React.Component {
             lastName: '',
             grade: '', 
             gradeInt: '',
-            hasCompletedCourseRequest: false
+            registrations: [],
+            isLoading: true,
+            isValidRegistrationTime: '',
+            openRegistration: '',
+            closeRegistration: ''
         }
     }
 
     componentDidMount() {
-         this.getStudentData();
+         this.getStudentData();  
     }
 
     getStudentData = () => {
@@ -26,16 +30,74 @@ class RegistrationForm extends React.Component {
         + this.props.match.params.studentId)
         .then( response => response.json())
         .then(data => {
-           this.setState({firstName: data.firstName})
-           this.setState({lastName: data.lastName})
-           this.setState({grade: data.gradeLevelString})
-           this.setState({gradeInt: data.gradeLevelInt})
-           this.setState({hasCompletedCourseRequest: data.hasCompletedCourseRequest})
-           
+           this.setState({firstName: data.firstName});
+           this.setState({lastName: data.lastName});
+           this.setState({grade: data.gradeLevelString});
+           this.setState({gradeInt: data.gradeLevelInt});
+           this.getRegistrationData(data.gradeLevelInt);
         })
         .catch( error => {
            console.log(error);
         })  
+    }
+
+    getCurrentStudentRegistrationWindow = (registrations, gradeInt) => {
+        if(gradeInt === 9) {
+            this.setState({openRegistration: registrations[0].openRegistration});
+            this.setState({closeRegistration: registrations[0].closeRegistration});
+        }
+        else if(gradeInt === 10) {
+            this.setState({openRegistration: registrations[1].openRegistration});
+            this.setState({closeRegistration: registrations[1].closeRegistration});
+        }
+        else if(gradeInt === 11) {
+            this.setState({openRegistration: registrations[2].openRegistration});
+            this.setState({closeRegistration: registrations[2].closeRegistration});
+        }
+        else if(gradeInt === 12) {
+            this.setState({openRegistration: registrations[3].openRegistration});
+            this.setState({closeRegistration: registrations[3].closeRegistration});
+            this.validateRegistrationWindow(registrations[3].openRegistration, registrations[3].closeRegistration);
+        }
+    }
+
+    validateRegistrationWindow = (openRegistration, closeRegistration) => {
+        var currentDate = new Date();
+        var openRegParts = openRegistration.split("-");
+        var openMonth = parseInt(openRegParts[0]);
+        var openDay = parseInt(openRegParts[1]);
+        var openYear = parseInt(openRegParts[2]);
+        var closeRegParts = closeRegistration.split("-");
+        var closeMonth = parseInt(closeRegParts[0]);
+        var closeDay = parseInt(closeRegParts[1]);
+        var closeYear = parseInt(closeRegParts[2]);
+        var currentMonth = currentDate.getMonth() + 1;
+        var currentDay = currentDate.getDate();
+        var currentYear = currentDate.getFullYear();
+
+        console.log(((currentYear >= openYear) && (currentYear >= closeYear)));
+        if(((currentMonth >= openMonth) && (currentMonth <= closeMonth))
+            && ((currentDay >= openDay) && (currentDay <= closeDay))
+            && ((currentYear >= openYear) && (currentYear >= closeYear))
+        ){
+            this.setState({isValidRegistrationTime: true});
+        }
+        else {
+            this.setState({isValidRegistrationTime: false});
+        }
+        this.setState({isLoading: false});
+    }
+
+    getRegistrationData = (gradeInt) => {
+        fetch('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/registration')
+        .then( response => response.json())
+        .then(data => {
+           this.setState({registrations: data});
+           this.getCurrentStudentRegistrationWindow(data, gradeInt);
+        })
+        .catch( error => {
+           console.log(error);
+        }) 
     }
 
     submitHandler = (e) => {
@@ -45,18 +107,40 @@ class RegistrationForm extends React.Component {
 
     render() {
         const { studentId, firstName, lastName,
-                grade, hasCompletedCourseRequest} = this.state;
+                grade, hasCompletedCourseRequest, isLoading, isValidRegistrationTime} = this.state;
         var user = firstName + " " + lastName;
-        return (
-            <div className='studentDash'>
-                <NaviBar username= {user} grade= {grade} studentId={ studentId }/>
-                <h1>Hello, { firstName}! Let's get you're schedule planning started.
-                    <Button variant="info" onClick={() => this.props.history.push('/')}>Logout</Button>
-                </h1>
-                <NavTab studentId={ studentId }/>
-                <RegistrationTable studentId={ studentId } hasSubmited= {hasCompletedCourseRequest}/>
-            </div>
-        );
+
+        if(isLoading) {
+            return(
+                <p>Loading<Spinner animation="grow" /></p>
+            );
+        }
+        else {
+            if(!isValidRegistrationTime) {
+                return (
+                    <div className='studentDash'>
+                        <NaviBar username= {user} grade= {grade} studentId={ studentId }/>
+                        <h1>Hello, { firstName}! Let's get you're schedule planning started.
+                            <Button variant="info" onClick={() => this.props.history.push('/')}>Logout</Button>
+                        </h1>
+                        <NavTab studentId={ studentId }/>
+                        <h4>Registration Window closed</h4>
+                    </div>
+                );
+            }
+            else if(isValidRegistrationTime) {
+                return (
+                    <div className='studentDash'>
+                        <NaviBar username= {user} grade= {grade} studentId={ studentId }/>
+                        <h1>Hello, { firstName}! Let's get you're schedule planning started.
+                            <Button variant="info" onClick={() => this.props.history.push('/')}>Logout</Button>
+                        </h1>
+                        <NavTab studentId={ studentId }/>
+                        <RegistrationTable studentId={ studentId } hasSubmited= {hasCompletedCourseRequest}/>
+                    </div>
+                );
+            }  
+        }
     }
 }           
 
