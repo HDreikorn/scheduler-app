@@ -10,12 +10,20 @@ class RegistrationCard extends React.Component {
             closeRegistration: this.props.closeRegistration,
             newStart: this.props.openRegistration,
             newEnd: this.props.closeRegistration,
-            grade: this.props.grade
+            grade: this.props.grade,
+            startChanged: false,
+            endChanged: false
         }
     }
 
     handleChange = (e) => {
         this.setState({[e.target.name]: e.target.value});
+        if(e.target.name === "newStart") {
+            this.setState({startChanged: true});
+        }
+        else {
+            this.setState({endChanged: true});
+        }
     }
 
     endDateIsLaterThanStart = (start, end) => {
@@ -24,28 +32,33 @@ class RegistrationCard extends React.Component {
         var startMonth = parseInt(splitStart[1]);
         var startDay = parseInt(splitStart[2]);
         var startYear = parseInt(splitStart[0]);
-        var endMonth = parseInt(splitEnd[1]);
-        var endDay = parseInt(splitEnd[2]);
-        var endYear = parseInt(splitEnd[0]);
-        console.log(startMonth);
-        if((endMonth < startMonth) && (endYear < startYear)){
+        var endMonth = parseInt(splitEnd[0]);
+        var endDay = parseInt(splitEnd[1]);
+        var endYear = parseInt(splitEnd[2]);
+
+        if((endMonth <= startMonth) && (endYear < startYear)){
+            console.log( "1 "+ splitStart + "start month: "+ startMonth + endMonth + endYear + startYear);
             return false;
         }
-        else if ((endDay < startDay) && (endMonth < startMonth) && (endYear < startYear)) {
+        else if ((endMonth < startMonth) && (endYear < startYear) && (endDay < startDay)) {
+            console.log("2" +startMonth + endMonth + endYear + startYear);
             return false;
         }
         else if (endYear < startYear) {
+            console.log("3"+startMonth);
             return false;
         }
         else {
+            console.log("4"+startMonth);
             return true;
         }
-;    }
+    }
 
     handleModify = () => {
-        const {newStart, newEnd, grade} = this.state;
+        document.getElementById("modify-date").reset();
+        const {newStart, newEnd, grade, startChanged, endChanged} = this.state;
         var newDateObject = {}
-        if(this.endDateIsLaterThanStart(newStart, newEnd)) {
+        if(!this.endDateIsLaterThanStart(newStart, newEnd)) {
             alert("Invalid Entry: End date must be after start date.");
             return;
         }
@@ -72,8 +85,12 @@ class RegistrationCard extends React.Component {
         axios.patch('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/registration', JSON.stringify(newDateObject))
         .then(response => {
             console.log("success");
-            this.setState({openRegistration: this.formatDate(this.state.newStart)});
-            this.setState({closeRegistration: this.formatDate(this.state.newEnd)});
+            if(startChanged) {
+                this.setState({openRegistration: this.formatDate(this.state.newStart)});
+            }
+            else if (endChanged) {
+                this.setState({closeRegistration: this.formatDate(this.state.newEnd)});
+            }
         })
         .catch(error => {
             console.log(error);
@@ -96,7 +113,7 @@ class RegistrationCard extends React.Component {
                 <Card.Text>
                 {openRegistration} to { closeRegistration }
                 </Card.Text>
-                <Form onSubmit={this.handleModify}>
+                <Form onSubmit={this.handleModify} id="modify-date">
                     <Form.Group >
                         <Form.Label>New Start:</Form.Label>
                         <Form.Control autoFocus type="date" name="newStart" onChange={this.handleChange}/>
