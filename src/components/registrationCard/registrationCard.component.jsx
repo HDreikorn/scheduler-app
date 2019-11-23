@@ -55,7 +55,9 @@ class RegistrationCard extends React.Component {
     // TODO: format the string into date
     // maybe cast to date?
     formatDate = (date) => {
-        console.log(typeof date);
+        var splitDate = date.split('-');
+        var newDateFormat = splitDate[1] + "-" + splitDate[2] + "-" + splitDate[0]
+        return newDateFormat;
     }
 
     render() {
