@@ -18,10 +18,38 @@ class RegistrationCard extends React.Component {
         this.setState({[e.target.name]: e.target.value});
     }
 
+    endDateIsLaterThanStart = (start, end) => {
+        var splitStart = start.split('-');
+        var splitEnd = end.split('-');
+        var startMonth = parseInt(splitStart[1]);
+        var startDay = parseInt(splitStart[2]);
+        var startYear = parseInt(splitStart[0]);
+        var endMonth = parseInt(splitEnd[1]);
+        var endDay = parseInt(splitEnd[2]);
+        var endYear = parseInt(splitEnd[0]);
+        console.log(startMonth);
+        if((endMonth < startMonth) && (endYear < startYear)){
+            return false;
+        }
+        else if ((endDay < startDay) && (endMonth < startMonth) && (endYear < startYear)) {
+            return false;
+        }
+        else if (endYear < startYear) {
+            return false;
+        }
+        else {
+            return true;
+        }
+;    }
+
     handleModify = () => {
         const {newStart, newEnd, grade} = this.state;
         var newDateObject = {}
-        console.log(this.state);
+        if(this.endDateIsLaterThanStart(newStart, newEnd)) {
+            alert("Invalid Entry: End date must be after start date.");
+            return;
+        }
+
         // Set up new date object based on the grade state
         if(grade === 12) {
             newDateObject.seniorWindowOpen = newStart;
@@ -52,8 +80,6 @@ class RegistrationCard extends React.Component {
         })
     }
 
-    // TODO: format the string into date
-    // maybe cast to date?
     formatDate = (date) => {
         var splitDate = date.split('-');
         var newDateFormat = splitDate[1] + "-" + splitDate[2] + "-" + splitDate[0]
