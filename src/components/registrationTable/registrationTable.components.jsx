@@ -14,17 +14,7 @@ class RegistrationTable extends React.Component {
             count: 0,
             gradeLevel: '',
             hasSubmited: this.props.hasSubmited,
-            chosenCourseNames: [],
-            chosenCourseIds: {
-                course1: "",
-                course2: "",
-                course3: "",
-                course4: "", 
-                course5: "",
-                course6: "",
-                course7: "",
-                course8: ""
-            },
+            choseCourseMap: new Map(),
             mathCredits: "",
             englishCredits: "",
             socialScienceCredits: "",
@@ -272,23 +262,12 @@ class RegistrationTable extends React.Component {
         }
      }
 
-    isDuplicateSelection = (courseName, chosenCourseNames) => {
-        var result = false;
-        chosenCourseNames.forEach(function(chosenCourse) {
-            if(chosenCourse === courseName) {
-                result = true;
-            }
-        });
-        return result;
-    }
-
     addClassToList(courseId, courseName, courseSubject, courseCredit) {
-        const {chosenCourseIds, count, chosenCourseNames} = this.state;
-        var canAdd = false;
+        const { count, choseCourseMap} = this.state;
 
         // Check for duplicate selection
-        var isDuplicate = this.isDuplicateSelection(courseName, chosenCourseNames);
-        canAdd = !isDuplicate;
+        var isDuplicate = choseCourseMap.has(courseId);
+        var canAdd = !isDuplicate;
 
         if(count > 6) {
             canAdd = true;
@@ -297,53 +276,8 @@ class RegistrationTable extends React.Component {
             canAdd = this.validateChosenSubjectCredit(courseSubject, courseCredit);
         }
 
-        if(canAdd) {   
-            // Get the course ids state to modify
-            var courseIds = chosenCourseIds;
-            // Check what count is at, then modify the course based on the count
-            if(count === 0){
-                courseIds.course1 = courseId;
-                this.setState({chosenCourseIds: courseIds});
-                this.setState({chosenCourseNames: [...chosenCourseNames, courseName]});
-            }
-            else if(count === 1){
-                courseIds.course2 = courseId;
-                this.setState({chosenCourseIds: courseIds});
-                this.setState({chosenCourseNames: [...chosenCourseNames, courseName]});
-            }
-            else if(count === 2){
-                courseIds.course3 = courseId;
-                this.setState({chosenCourseIds: courseIds});
-                this.setState({chosenCourseNames: [...chosenCourseNames, courseName]});
-            }
-            else if(count === 3){
-                courseIds.course4 = courseId;
-                this.setState({chosenCourseIds: courseIds});
-                this.setState({chosenCourseNames: [...chosenCourseNames, courseName]});
-            }
-            else if(count === 4){
-                courseIds.course5 = courseId;
-                this.setState({chosenCourseIds: courseIds});
-                this.setState({chosenCourseNames: [...chosenCourseNames, courseName]});
-            }
-            else if(count === 5){
-                courseIds.course6 = courseId;
-                this.setState({chosenCourseIds: courseIds});
-                this.setState({chosenCourseNames: [...chosenCourseNames, courseName]});
-            }
-            else if(count === 6){
-                courseIds.course7 = courseId;
-                this.setState({chosenCourseIds: courseIds});
-                this.setState({chosenCourseNames: [...chosenCourseNames, courseName]});
-            }
-            else if(count === 7){
-                courseIds.course8 = courseId;
-                this.setState({chosenCourseIds: courseIds});
-                this.setState({chosenCourseNames: [...chosenCourseNames, courseName]});
-            }
-            else {
-                return null;
-            }
+        if(canAdd) {
+            choseCourseMap.set(courseId, courseName);
             // set count state
             var newCount = count + 1;
             this.setState({count:newCount})
@@ -365,11 +299,24 @@ class RegistrationTable extends React.Component {
         event.preventDefault();
     }
 
+    turnMapIntoObjectofIds = () => {
+        var courseIds ={}
+        var count = 1;
+        this.state.choseCourseMap.forEach((value, key) => {
+            var courseName = 'course' + count;
+            courseIds[courseName] = key;
+            count++;
+        });
+        console.log(courseIds);
+        return courseIds;
+    }
+
     submitCourses = (event) => {
         event.preventDefault();
         // Convert chosen course ids in JSON object
-        var jsonIds = JSON.stringify(this.state.chosenCourseIds);
-        // Axios call to send choseCourseIds state object
+        var jsonIds = JSON.stringify(this.turnMapIntoObjectofIds());
+
+        //Axios call to send choseCourseIds state object
         axios.post('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/students/' + this.props.studentId + '/courseRequest', jsonIds)
         .then(response => {
             alert("Successfully submited.");
@@ -383,19 +330,27 @@ class RegistrationTable extends React.Component {
             else {
                 alert("Something went wrong.");
             }
-        })
+        });
+    }
+
+    removeClass = (key) => {
+        const { choseCourseMap } = this.state;
+        choseCourseMap.delete(key);
+        this.setState({choseCourseMap: choseCourseMap});
     }
 
     renderListGroup = (chosenCourseNames) => {
         var listItems = [];
-        chosenCourseNames.forEach(element => {
-            listItems.push(<ListGroup.Item key={element}>{element}</ListGroup.Item>)
+        chosenCourseNames.forEach((value, key) => {
+            listItems.push(<ListGroup.Item key={key}>{value}
+            <Button className="removeButton" variant="outline-danger" onClick={() => this.removeClass(key)}>Remove</Button>
+            </ListGroup.Item>)
         }); 
         return listItems;
     }
 
     render() {
-        const {courses, searchfield, chosenCourseNames, count, hasSubmited} = this.state;
+        const {courses, searchfield, count, hasSubmited, choseCourseMap} = this.state;
         const filteredCourses = courses.filter(course => { 
             return course.courseName.toLowerCase().includes(searchfield.toLocaleLowerCase());
         })
@@ -424,24 +379,29 @@ class RegistrationTable extends React.Component {
                             All courses selected. Please submit now. You can modify at any point after submission.
                         </Alert>
                     </div>
-                    <Card style={{ width: '18rem' }}>
+                    <Card style={{ width: '18rem', margin: '25px' }}>
                         <Card.Header>Selected Courses</Card.Header>
                         <ListGroup variant="flush">
-                            { this.renderListGroup(chosenCourseNames) }
+                            { this.renderListGroup(choseCourseMap) }
                         </ListGroup>
                     </Card>
-                    <Button variant="info" onClick={this.submitCourses}>Submit</Button>
+                    <Button variant="info" onClick={this.submitCourses}>Submit Request</Button>
                 </div>   
             );
         }
         else {
             return (
                 <div className=''>
+                <p>You must select <b>8</b> courses to register for the next school year.
+                        The course options you are allowed to pick are based on your credits completed
+                        versus how much you need to graduate. You can see that information in the <b>My Information </b> 
+                        tab under the <b>Graduation Credits</b> table. We encourage you to look at the course catalog for more 
+                        information on the courses offered. Happy pickings!</p>
                 <SearchBox searchChange={this.onSearchChange} searchBy='Search by Name'/>
-                <Card style={{ width: '18rem' }}>
+                <Card style={{ width: '18rem', margin: '15px' }}>
                     <Card.Header>Selected Courses</Card.Header>
                     <ListGroup variant="flush">
-                        { this.renderListGroup(chosenCourseNames) }
+                        { this.renderListGroup(choseCourseMap) }
                     </ListGroup>
                 </Card>
                 <Table striped bordered hover>
