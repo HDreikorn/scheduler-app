@@ -30,7 +30,6 @@ class InfoTable extends React.Component {
     }
 
     validateGPA = (gpa) => {
-        console.log(gpa);
         if(gpa === 'NaN'){
             return 'No GPA in the system';
         }
