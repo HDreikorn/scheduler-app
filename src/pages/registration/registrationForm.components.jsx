@@ -45,14 +45,17 @@ class RegistrationForm extends React.Component {
         if(gradeInt === 9) {
             this.setState({openRegistration: registrations[0].openRegistration});
             this.setState({closeRegistration: registrations[0].closeRegistration});
+            this.validateRegistrationWindow(registrations[3].openRegistration, registrations[3].closeRegistration);
         }
         else if(gradeInt === 10) {
             this.setState({openRegistration: registrations[1].openRegistration});
             this.setState({closeRegistration: registrations[1].closeRegistration});
+            this.validateRegistrationWindow(registrations[3].openRegistration, registrations[3].closeRegistration);
         }
         else if(gradeInt === 11) {
             this.setState({openRegistration: registrations[2].openRegistration});
             this.setState({closeRegistration: registrations[2].closeRegistration});
+            this.validateRegistrationWindow(registrations[3].openRegistration, registrations[3].closeRegistration);
         }
         else if(gradeInt === 12) {
             this.setState({openRegistration: registrations[3].openRegistration});
@@ -75,7 +78,6 @@ class RegistrationForm extends React.Component {
         var currentDay = currentDate.getDate();
         var currentYear = currentDate.getFullYear();
 
-        console.log(((currentYear >= openYear) && (currentYear >= closeYear)));
         if(((currentMonth >= openMonth) && (currentMonth <= closeMonth))
             && ((currentDay >= openDay) && (currentDay <= closeDay))
             && ((currentYear >= openYear) && (currentYear >= closeYear))
@@ -102,7 +104,6 @@ class RegistrationForm extends React.Component {
 
     submitHandler = (e) => {
         e.preventDefault();
-        console.log(e.target);
     }
 
     render() {

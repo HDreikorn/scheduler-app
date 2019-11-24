@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Table, ListGroup, Card, Button, Alert } from 'react-bootstrap';
 import SearchBox from '../searchBox/searchBox.component';
 import ModifyRequest from '../modifyCourseForm/modifyCourseForm.component';
+import './registrationTable.styles.scss';
 
 class RegistrationTable extends React.Component {
     constructor(props) {
@@ -71,9 +72,9 @@ class RegistrationTable extends React.Component {
     }
 
     getClassSet = (gradeInt) => {
-        var freshmanSet = new Map([["English", 1], ["Math", 1], ["Science", 1], ["Language", 1], ["Physical Education", 1], ["Health", 1], ["Fine Arts", 1], ["Electives", 2]]);
-        var sophmoreSet = new Map([["English", 1], ["Math", 1], ["Science", 1], ["Language", 1], ["Social Science", 1], ["Physical Education", 1], ["Health", 1], ["Fine Arts", 1], ["Electives", 2]]);
-        var juniorSet = new Map([["English", 1], ["Math", 1], ["Science", 1], ["Language", 1], ["Social Science", 1], ["Physical Education", 1], ["Health", 1], ["Fine Arts", 1], ["Electives", 2]]);
+        var freshmanSet = new Map([["English", 1], ["Math", 1], ["Science", 1], ["Language", 1], ["Physical Education", 1], ["Health", 1], ["Fine Arts", 2], ["Electives", 2]]);
+        var sophmoreSet = new Map([["English", 1], ["Math", 1], ["Science", 1], ["Language", 1], ["Social Science", 1], ["Physical Education", 1], ["Health", 1], ["Fine Arts", 2], ["Electives", 2]]);
+        var juniorSet = new Map([["English", 1], ["Math", 1], ["Science", 1], ["Language", 1], ["Social Science", 1], ["Physical Education", 1], ["Health", 1], ["Fine Arts", 2], ["Electives", 2]]);
         var seniorSet = new Map([["English", 1], ["Math", 1], ["Science", 2], ["Social Science", 1], ["Physical Education", 1], ["Health", 1], ["Fine Arts", 1], ["Electives", 2]]);
         if (gradeInt === 9 ) {
             this.setState({classSet:freshmanSet});
@@ -271,69 +272,87 @@ class RegistrationTable extends React.Component {
         }
      }
 
+    isDuplicateSelection = (courseName, chosenCourseNames) => {
+        var result = false;
+        chosenCourseNames.forEach(function(chosenCourse) {
+            if(chosenCourse === courseName) {
+                result = true;
+            }
+        });
+        return result;
+    }
+
     addClassToList(courseId, courseName, courseSubject, courseCredit) {
         const {chosenCourseIds, count, chosenCourseNames} = this.state;
         var canAdd = false;
+
+        // Check for duplicate selection
+        var isDuplicate = this.isDuplicateSelection(courseName, chosenCourseNames);
+        canAdd = !isDuplicate;
+
         if(count > 6) {
             canAdd = true;
         }
-        else {
+        else if (!isDuplicate){
             canAdd = this.validateChosenSubjectCredit(courseSubject, courseCredit);
         }
 
         if(canAdd) {   
-        // Get the course ids state to modify
-        var courseIds = chosenCourseIds;
-        // Check what count is at, then modify the course based on the count
-        if(count === 0){
-            courseIds.course1 = courseId;
-            this.setState({chosenCourseIds: courseIds});
-            this.setState({chosenCourseNames: [...chosenCourseNames, courseName]});
-        }
-        else if(count === 1){
-            courseIds.course2 = courseId;
-            this.setState({chosenCourseIds: courseIds});
-            this.setState({chosenCourseNames: [...chosenCourseNames, courseName]});
-        }
-        else if(count === 2){
-            courseIds.course3 = courseId;
-            this.setState({chosenCourseIds: courseIds});
-            this.setState({chosenCourseNames: [...chosenCourseNames, courseName]});
-        }
-        else if(count === 3){
-            courseIds.course4 = courseId;
-            this.setState({chosenCourseIds: courseIds});
-            this.setState({chosenCourseNames: [...chosenCourseNames, courseName]});
-        }
-        else if(count === 4){
-            courseIds.course5 = courseId;
-            this.setState({chosenCourseIds: courseIds});
-            this.setState({chosenCourseNames: [...chosenCourseNames, courseName]});
-        }
-        else if(count === 5){
-            courseIds.course6 = courseId;
-            this.setState({chosenCourseIds: courseIds});
-            this.setState({chosenCourseNames: [...chosenCourseNames, courseName]});
-        }
-        else if(count === 6){
-            courseIds.course7 = courseId;
-            this.setState({chosenCourseIds: courseIds});
-            this.setState({chosenCourseNames: [...chosenCourseNames, courseName]});
-        }
-        else if(count === 7){
-            courseIds.course8 = courseId;
-            this.setState({chosenCourseIds: courseIds});
-            this.setState({chosenCourseNames: [...chosenCourseNames, courseName]});
-        }
-        else {
-            return null;
-        }
-        // set count state
-        var newCount = count + 1;
-        this.setState({count:newCount})
-        }
+            // Get the course ids state to modify
+            var courseIds = chosenCourseIds;
+            // Check what count is at, then modify the course based on the count
+            if(count === 0){
+                courseIds.course1 = courseId;
+                this.setState({chosenCourseIds: courseIds});
+                this.setState({chosenCourseNames: [...chosenCourseNames, courseName]});
+            }
+            else if(count === 1){
+                courseIds.course2 = courseId;
+                this.setState({chosenCourseIds: courseIds});
+                this.setState({chosenCourseNames: [...chosenCourseNames, courseName]});
+            }
+            else if(count === 2){
+                courseIds.course3 = courseId;
+                this.setState({chosenCourseIds: courseIds});
+                this.setState({chosenCourseNames: [...chosenCourseNames, courseName]});
+            }
+            else if(count === 3){
+                courseIds.course4 = courseId;
+                this.setState({chosenCourseIds: courseIds});
+                this.setState({chosenCourseNames: [...chosenCourseNames, courseName]});
+            }
+            else if(count === 4){
+                courseIds.course5 = courseId;
+                this.setState({chosenCourseIds: courseIds});
+                this.setState({chosenCourseNames: [...chosenCourseNames, courseName]});
+            }
+            else if(count === 5){
+                courseIds.course6 = courseId;
+                this.setState({chosenCourseIds: courseIds});
+                this.setState({chosenCourseNames: [...chosenCourseNames, courseName]});
+            }
+            else if(count === 6){
+                courseIds.course7 = courseId;
+                this.setState({chosenCourseIds: courseIds});
+                this.setState({chosenCourseNames: [...chosenCourseNames, courseName]});
+            }
+            else if(count === 7){
+                courseIds.course8 = courseId;
+                this.setState({chosenCourseIds: courseIds});
+                this.setState({chosenCourseNames: [...chosenCourseNames, courseName]});
+            }
+            else {
+                return null;
+            }
+            // set count state
+            var newCount = count + 1;
+            this.setState({count:newCount})
+            }
         else {
             // Set state to show badge with message.
+            if(isDuplicate){
+                alert("Cannot add a duplicate course. Choose another.");
+            }
             console.log("course was not validated, not adding.");
         }
     }
@@ -389,9 +408,9 @@ class RegistrationTable extends React.Component {
         }
         else if (hasSubmited) {
             return (
-                <div className=''>
-                    <p>Courses submitted click below to modify.</p>
-                    <div style={{ display: 'flex' }}>
+                <div className='registrationTable'>
+                    <div className='centerContent'>
+                        <p>Courses submitted click below to modify.</p>
                         <ModifyRequest courses={courses} studentId={this.props.studentId}/>
                     </div>
                 </div>
