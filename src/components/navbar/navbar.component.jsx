@@ -10,7 +10,7 @@ class NaviBar extends React.Component {
                 <Navbar.Toggle />
                 <Navbar.Collapse className="justify-content-end">
                     <Navbar.Text>
-                    Signed in as: {this.props.username} ({this.props.grade}) 
+                    Signed in as: {this.props.username}
                     </Navbar.Text>
                 </Navbar.Collapse>
             </Navbar>

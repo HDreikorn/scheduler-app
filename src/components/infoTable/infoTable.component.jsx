@@ -44,6 +44,7 @@ class InfoTable extends React.Component {
                     <Card className='smallCard'>
                         <Card.Header>Academic Profile</Card.Header>
                         <ListGroup variant="flush">
+                            <ListGroup.Item>Grade Level: { this.props.grade }</ListGroup.Item>
                             <ListGroup.Item>Credits Earned: { totalCreditsEarned }</ListGroup.Item>
                             <ListGroup.Item>Credits Needed: { totalCreditsNeeded }</ListGroup.Item>
                             <ListGroup.Item>GPA: { gpa }</ListGroup.Item>
