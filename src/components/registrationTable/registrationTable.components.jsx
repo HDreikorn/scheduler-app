@@ -333,10 +333,57 @@ class RegistrationTable extends React.Component {
         });
     }
 
+    increaseCreditCount = (deletedSubject, courseCredit) => {
+        const {mathCredits, englishCredits, socialScienceCredits,
+            scienceCredits, physEdCredits, healthCredits, 
+            electiveCredits, fineArtsCredits, languageCredits, classSet} = this.state;
+        if (deletedSubject === "Fine Arts") {
+            this.setState({fineArtsCredits: fineArtsCredits + courseCredit});
+        }
+        if (deletedSubject === "Language") {
+            this.setState({languageCredits: languageCredits + courseCredit});
+
+        }
+        if (deletedSubject === "Electives") {
+            this.setState({electiveCredits: electiveCredits + courseCredit});
+        }
+        if (deletedSubject === "Math") {
+            this.setState({mathCredits: mathCredits + courseCredit});
+        }
+        if (deletedSubject === "Physical Education") {
+            this.setState({physEdCredits: physEdCredits + courseCredit});
+        }
+        if (deletedSubject === "Science") {
+            this.setState({scienceCredits: scienceCredits + courseCredit});
+        }
+        if (deletedSubject === "Social Science") {
+            this.setState({socialScienceCredits: socialScienceCredits + courseCredit});
+        }
+        if (deletedSubject === "English") {
+            this.setState({englishCredits: englishCredits + courseCredit});
+        }
+        if (deletedSubject === "Health") {
+            this.setState({healthCredits: healthCredits + courseCredit});
+        }
+
+        //Increase class set count too
+        classSet.forEach(function(value, key) {
+            if(key === deletedSubject) {
+                classSet.set(key, value+1);
+                return;
+            }
+        });
+    }
+
     removeClass = (key) => {
-        const { choseCourseMap } = this.state;
+        const { choseCourseMap, courses } = this.state;
         choseCourseMap.delete(key);
         this.setState({choseCourseMap: choseCourseMap});
+        // Find the course and put back the credit
+        const deletedCourse = courses.filter(course => { 
+            return course.courseId === key;
+        })
+        this.increaseCreditCount(deletedCourse[0].gradRequirementsThisCourseFulfills.subjectName, deletedCourse[0].courseCredit);
     }
 
     renderListGroup = (chosenCourseNames) => {

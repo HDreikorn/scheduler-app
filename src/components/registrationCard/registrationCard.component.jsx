@@ -88,7 +88,7 @@ class RegistrationCard extends React.Component {
             if(startChanged) {
                 this.setState({openRegistration: this.formatDate(this.state.newStart)});
             }
-            else if (endChanged) {
+            if (endChanged) {
                 this.setState({closeRegistration: this.formatDate(this.state.newEnd)});
             }
         })
