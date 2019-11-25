@@ -32,31 +32,37 @@ class RegistrationCard extends React.Component {
         var startMonth = parseInt(splitStart[1]);
         var startDay = parseInt(splitStart[2]);
         var startYear = parseInt(splitStart[0]);
-        var endMonth = parseInt(splitEnd[0]);
-        var endDay = parseInt(splitEnd[1]);
-        var endYear = parseInt(splitEnd[2]);
+        var endMonth;
+        var endDay;
+        var endYear;
+
+        if(this.state.endChanged) {
+            endMonth = parseInt(splitEnd[1]);
+            endDay = parseInt(splitEnd[2]);
+            endYear = parseInt(splitEnd[0]);
+        }
+        else {
+            endMonth = parseInt(splitEnd[0]);
+            endDay = parseInt(splitEnd[1]);
+            endYear = parseInt(splitEnd[2]);
+        }
 
         if((endMonth <= startMonth) && (endYear < startYear)){
-            console.log( "1 "+ splitStart + "start month: "+ startMonth + endMonth + endYear + startYear);
             return false;
         }
         else if ((endMonth < startMonth) && (endYear < startYear) && (endDay < startDay)) {
-            console.log("2" +startMonth + endMonth + endYear + startYear);
             return false;
         }
         else if (endYear < startYear) {
-            console.log("3"+startMonth);
             return false;
         }
         else {
-            console.log("4"+startMonth);
             return true;
         }
     }
 
     handleModify = () => {
-        document.getElementById("modify-date").reset();
-        const {newStart, newEnd, grade, startChanged, endChanged} = this.state;
+        const {newStart, newEnd, grade} = this.state;
         var newDateObject = {}
         if(!this.endDateIsLaterThanStart(newStart, newEnd)) {
             alert("Invalid Entry: End date must be after start date.");
@@ -85,22 +91,11 @@ class RegistrationCard extends React.Component {
         axios.patch('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/registration', JSON.stringify(newDateObject))
         .then(response => {
             console.log("success");
-            if(startChanged) {
-                this.setState({openRegistration: this.formatDate(this.state.newStart)});
-            }
-            if (endChanged) {
-                this.setState({closeRegistration: this.formatDate(this.state.newEnd)});
-            }
+            window.location.reload(false);
         })
         .catch(error => {
             console.log(error);
         })
-    }
-
-    formatDate = (date) => {
-        var splitDate = date.split('-');
-        var newDateFormat = splitDate[1] + "-" + splitDate[2] + "-" + splitDate[0]
-        return newDateFormat;
     }
 
     render() {
