@@ -58,7 +58,8 @@ class AdminDash extends React.Component {
     handleDelete = () => {
         axios.delete('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/schedule')
         .then(response => {
-            alert("All classes successfully deleted.")
+            alert("All classes successfully deleted.");
+            window.location.reload(false);
           })
         .catch(error => {
         console.log(error);
@@ -71,7 +72,8 @@ class AdminDash extends React.Component {
         axios.post('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/schedule?build=true')
         .then(response => {
             this.handleClose();
-            alert("All classes successfully built.")
+            alert("All classes successfully built.");
+            window.location.reload(false);
           })
         .catch(error => {
             this.handleClose();
