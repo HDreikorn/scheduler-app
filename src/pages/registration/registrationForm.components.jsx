@@ -77,11 +77,14 @@ class RegistrationForm extends React.Component {
         var currentMonth = currentDate.getMonth() + 1;
         var currentDay = currentDate.getDate();
         var currentYear = currentDate.getFullYear();
- 
+        
         if(((currentMonth >= openMonth) && (currentMonth <= closeMonth))
             && ((currentYear >= openYear) && (currentYear >= closeYear))
         ){
             if((openMonth === closeMonth) && ((currentDay > closeDay) || (currentDay < openDay))){
+                this.setState({isValidRegistrationTime: false});
+            }
+            else if((currentMonth === closeMonth) && (currentDay > closeDay)) {
                 this.setState({isValidRegistrationTime: false});
             }
             else{
