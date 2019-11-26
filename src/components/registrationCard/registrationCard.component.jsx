@@ -21,7 +21,7 @@ class RegistrationCard extends React.Component {
         if(e.target.name === "newStart") {
             this.setState({startChanged: true});
         }
-        else {
+        if (e.target.name === "newEnd") {
             this.setState({endChanged: true});
         }
     }
