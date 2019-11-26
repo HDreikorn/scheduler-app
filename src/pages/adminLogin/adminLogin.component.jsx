@@ -33,7 +33,7 @@ class AdminLogin extends Component {
       this.setState({username:''});
       this.setState({adminPassword:''});
       alert("Invalid login. Try again.")
-      console.log(error.response);
+      window.location.reload(false);
       this.setState({submitedLogin: false});
     })
   }
