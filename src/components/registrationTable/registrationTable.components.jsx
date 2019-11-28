@@ -30,6 +30,15 @@ class RegistrationTable extends React.Component {
     }
 
     componentDidMount() {
+        // Get info of students who have registered for their courses
+        fetch('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/students/' + this.props.studentId + '/courserequest')
+        .then( response => response.json())
+        .then(data => {
+           this.setState({hasSubmited: true});
+        })
+        .catch( error => {
+           console.log(error);
+        })
         // Get course data
         fetch('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/students/' + this.props.studentId + '/coursehistory')
          .then( response => response.json())
@@ -46,16 +55,6 @@ class RegistrationTable extends React.Component {
             this.setState({electiveCredits: data.electiveSummary.creditsNeeded});
             this.setState({languageCredits: data.languageSummary.creditsNeeded});
             this.getClassSet(this.state.gradeLevel);
-         })
-         .catch( error => {
-            console.log(error);
-         })
-         // Get info of students who have registered for their courses
-         fetch('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/students/' + this.props.studentId + '/courserequest')
-         .then( response => response.json())
-         .then(data => {
-            this.setState({eligibleCourses: data.eligibleCourses});
-            this.setState({hasSubmited: true});
          })
          .catch( error => {
             console.log(error);
@@ -401,12 +400,32 @@ class RegistrationTable extends React.Component {
         var listItems = [];
         var itemCount = 0;
         chosenCourseNames.forEach((value, key) => {
-            listItems.push(<ListGroup.Item key={key}>{value}
-            <Badge pill variant="primary">Confirmed</Badge>
-            </ListGroup.Item>)
-            if(itemCount > 3){
+            if(itemCount <= 3){
+                listItems.push(<ListGroup.Item key={key}>{value}
+                <Badge pill variant="primary">Confirmed</Badge>
+                </ListGroup.Item>)
+            }
+            else if(itemCount > 3){
                 listItems.push(<ListGroup.Item key={key}>{value}
                 <Button className="removeButton" variant="outline-danger" onClick={() => this.removeClass(key)}>Remove</Button>
+                </ListGroup.Item>)
+            }
+            itemCount++;
+        }); 
+        return listItems;
+    }
+
+    renderFinalListGroup = (chosenCourseNames) => {
+        var listItems = [];
+        var itemCount = 0;
+        chosenCourseNames.forEach((value, key) => {
+            if(itemCount <= 3){
+                listItems.push(<ListGroup.Item key={key}>{value}
+                <Badge pill variant="primary">Confirmed</Badge>
+                </ListGroup.Item>)
+            }
+            else if(itemCount > 3){
+                listItems.push(<ListGroup.Item key={key}>{value}
                 </ListGroup.Item>)
             }
             itemCount++;
@@ -419,7 +438,7 @@ class RegistrationTable extends React.Component {
     }
 
     render() {
-        const {courses, count, hasSubmited, choseCourseMap, confirmedCore, confirmedElective} = this.state;
+        const {courses, count, hasSubmited, choseCourseMap, confirmedCore, classSet} = this.state;
         if (courses.length === 0){
             return (
             <div className=''>
@@ -431,27 +450,34 @@ class RegistrationTable extends React.Component {
             return (
                 <div className='registrationTable'>
                     <div className='centerContent'>
-                        <p>Courses submitted click below to modify.</p>
-                        <ModifyRequest courses={courses} studentId={this.props.studentId}/>
+                        <h5>Courses submitted click below to modify.</h5>
+                        <p>A course course must be swapped with another course of the same subject.
+                        For example, Chemistry can switch with Physics, but Physics cannot switch with Spanish. 
+                        Please keep this in mind when making your selections.</p>
+                        <ModifyRequest courses={courses} studentId={this.props.studentId} classSet={classSet}/>
                     </div>
                 </div>
                 );
         }
         else if (count >= 8) {
             return (
-                <div>
+                <div >
                     <div>
                         <Alert variant="success">
-                            All courses selected. Please submit now. You can modify at any point after submission.
+                            All courses selected. Please submit now confirm all your course selections. You can modify at any point after submission.
                         </Alert>
                     </div>
-                    <Card style={{ width: '18rem', margin: '25px' }}>
-                        <Card.Header>Selected Courses</Card.Header>
-                        <ListGroup variant="flush">
-                            { this.renderListGroup(choseCourseMap) }
-                        </ListGroup>
-                    </Card>
-                    <Button variant="info" onClick={this.submitCourses}>Submit Request</Button>
+                    <div className='registrationTable'>
+                        <div className='centerContent'>
+                            <Card style={{ width: '25rem', margin: '15px', textAlign: "left" }}>
+                                <Card.Header>Selected Courses</Card.Header>
+                                <ListGroup variant="flush">
+                                    { this.renderFinalListGroup(choseCourseMap) }
+                                </ListGroup>
+                            </Card>
+                            <Button variant="info" onClick={this.submitCourses}>Submit Request</Button>
+                        </div>
+                    </div>
                 </div>   
             );
         }
@@ -469,7 +495,7 @@ class RegistrationTable extends React.Component {
                         information on the courses offered. Happy pickings!</p>
                 <h4>Next, choose 4 Fine Arts or Elective classes.</h4>
                 <div className="selectionSection">
-                    <Card style={{ width: '18rem', margin: '15px' }}>
+                    <Card style={{ width: '25rem', margin: '15px', textAlign: "left" }}>
                         <Card.Header>Selected Courses</Card.Header>
                         <ListGroup variant="flush">
                             { this.renderConfirmedListGroup(choseCourseMap) }
@@ -499,7 +525,7 @@ class RegistrationTable extends React.Component {
             return (
                 <div>
                     <h4>Confirm this selection and move on to select elective and fine arts?</h4>
-                    <Card style={{ width: '18rem', margin: '15px' }}>
+                    <Card style={{ width: '25rem', margin: '15px', textAlign: "left" }}>
                         <Card.Header>Selected Courses</Card.Header>
                         <ListGroup variant="flush">
                             { this.renderListGroup(choseCourseMap) }
@@ -528,7 +554,7 @@ class RegistrationTable extends React.Component {
                         information on the courses offered. Happy pickings!</p>
                 <h4>First, choose 4 core classes first.</h4>
                 <div className="selectionSection">
-                    <Card style={{ width: '18rem', margin: '15px' }}>
+                    <Card style={{ width: '25rem', margin: '15px', textAlign: "left" }}>
                         <Card.Header>Selected Courses</Card.Header>
                         <ListGroup variant="flush">
                             { this.renderListGroup(choseCourseMap) }
