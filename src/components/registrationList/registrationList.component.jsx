@@ -3,8 +3,8 @@ import RegistrationCard from '../registrationCard/registrationCard.component';
 
 
 class RegistrationList extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             registrations: []
         }
