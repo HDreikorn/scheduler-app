@@ -29,12 +29,22 @@ class RegistrationCard extends React.Component {
     endDateIsLaterThanStart = (start, end) => {
         var splitStart = start.split('-');
         var splitEnd = end.split('-');
-        var startMonth = parseInt(splitStart[1]);
-        var startDay = parseInt(splitStart[2]);
-        var startYear = parseInt(splitStart[0]);
+        var startMonth;
+        var startDay;
+        var startYear;
         var endMonth;
         var endDay;
         var endYear;
+        if(this.state.startChanged){
+            startMonth = parseInt(splitStart[1]);
+            startDay = parseInt(splitStart[2]);
+            startYear = parseInt(splitStart[0]);
+        }
+        else{
+            startMonth = parseInt(splitStart[0]);
+            startDay = parseInt(splitStart[1]);
+            startYear = parseInt(splitStart[2]);
+        }
 
         if(this.state.endChanged) {
             endMonth = parseInt(splitEnd[1]);
@@ -47,10 +57,12 @@ class RegistrationCard extends React.Component {
             endYear = parseInt(splitEnd[2]);
         }
 
-        if((endMonth <= startMonth) && (endYear < startYear)){
+        console.log(endYear + " " + startYear);
+
+        if((endMonth < startMonth) && (endYear === startYear)){
             return false;
         }
-        else if ((endMonth < startMonth) && (endYear < startYear) && (endDay < startDay)) {
+        else if ((endMonth === startMonth) && (endYear === startYear) && (endDay <= startDay)) {
             return false;
         }
         else if (endYear < startYear) {
