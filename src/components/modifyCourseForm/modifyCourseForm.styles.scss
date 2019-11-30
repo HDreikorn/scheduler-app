@@ -1,4 +1,4 @@
-.registrationTable {
+.modifyBody {
     display: flex;
     margin-top: 25px;
     align-items: center;
@@ -14,14 +14,6 @@
     margin-right: auto;
 }
 
-.removeButton {
-    margin: 15px;
-}
-
-h4{
-    color: red;
-}
-
-.selectionSection {
-    display: flex;
+Button {
+    margin: 10px;
 }

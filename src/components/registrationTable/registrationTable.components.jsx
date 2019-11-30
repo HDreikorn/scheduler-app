@@ -1,7 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { Table, ListGroup, Card, Button, Alert } from 'react-bootstrap';
-import SearchBox from '../searchBox/searchBox.component';
+import { Table, ListGroup, Card, Button, Alert, Badge } from 'react-bootstrap';
 import ModifyRequest from '../modifyCourseForm/modifyCourseForm.component';
 import './registrationTable.styles.scss';
 
@@ -24,11 +23,22 @@ class RegistrationTable extends React.Component {
             electiveCredits: "",
             fineArtsCredits: "",
             languageCredits: "",
-            classSet: this.props.classSet
+            classSet: this.props.classSet,
+            confirmedCore: false,
+            confirmedElective: false
         }
     }
 
     componentDidMount() {
+        // Get info of students who have registered for their courses
+        fetch('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/students/' + this.props.studentId + '/courserequest')
+        .then( response => response.json())
+        .then(data => {
+           this.setState({hasSubmited: true});
+        })
+        .catch( error => {
+           console.log(error);
+        })
         // Get course data
         fetch('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/students/' + this.props.studentId + '/coursehistory')
          .then( response => response.json())
@@ -49,23 +59,13 @@ class RegistrationTable extends React.Component {
          .catch( error => {
             console.log(error);
          })
-         // Get info of students who have registered for their courses
-         fetch('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/students/' + this.props.studentId + '/courserequest')
-         .then( response => response.json())
-         .then(data => {
-            this.setState({eligibleCourses: data.eligibleCourses});
-            this.setState({hasSubmited: true});
-         })
-         .catch( error => {
-            console.log(error);
-         })
     }
 
     getClassSet = (gradeInt) => {
-        var freshmanSet = new Map([["English", 1], ["Math", 1], ["Science", 1], ["Language", 1], ["Physical Education", 1], ["Health", 1], ["Fine Arts", 2], ["Electives", 2]]);
-        var sophmoreSet = new Map([["English", 1], ["Math", 1], ["Science", 1], ["Language", 1], ["Social Science", 1], ["Physical Education", 1], ["Health", 1], ["Fine Arts", 2], ["Electives", 2]]);
-        var juniorSet = new Map([["English", 1], ["Math", 1], ["Science", 1], ["Language", 1], ["Social Science", 1], ["Physical Education", 1], ["Health", 1], ["Fine Arts", 2], ["Electives", 2]]);
-        var seniorSet = new Map([["English", 1], ["Math", 1], ["Science", 2], ["Social Science", 1], ["Physical Education", 1], ["Health", 1], ["Fine Arts", 1], ["Electives", 2]]);
+        var freshmanSet = new Map([["English", 1], ["Math", 1], ["Science", 1], ["Language", 1], ["Physical Education", 1], ["Health", 1], ["Fine Arts", 4], ["Electives", 4]]);
+        var sophmoreSet = new Map([["English", 1], ["Math", 1], ["Science", 1], ["Language", 1], ["Social Science", 1], ["Physical Education", 1], ["Health", 1], ["Fine Arts", 4], ["Electives", 4]]);
+        var juniorSet = new Map([["English", 1], ["Math", 1], ["Science", 1], ["Language", 1], ["Social Science", 1], ["Physical Education", 1], ["Health", 1], ["Fine Arts", 4], ["Electives", 4]]);
+        var seniorSet = new Map([["English", 1], ["Math", 1], ["Science", 2], ["Social Science", 1], ["Physical Education", 1], ["Health", 1], ["Fine Arts", 4], ["Electives", 4]]);
         if (gradeInt === 9 ) {
             this.setState({classSet:freshmanSet});
         }
@@ -96,7 +96,7 @@ class RegistrationTable extends React.Component {
         })
      }
 
-     validateCourseChoice = (courseSubject) => {
+    validateCourseChoice = (courseSubject) => {
          const {classSet} = this.state;
          var isValid = false;
          // Go through class set if in there and greater than zero, it is valid.
@@ -115,9 +115,8 @@ class RegistrationTable extends React.Component {
         const {mathCredits, englishCredits, socialScienceCredits,
                 scienceCredits, physEdCredits, healthCredits, 
                 electiveCredits, fineArtsCredits, languageCredits} = this.state;
-
         if (courseSubject === "Fine Arts") {
-            if (courseCredit > fineArtsCredits) {
+            if (courseCredit > electiveCredits) {
                 alert("Not a valid choice. You have fulfilled all credits in this subject.");
                 return false;
             }
@@ -307,7 +306,6 @@ class RegistrationTable extends React.Component {
             courseIds[courseName] = key;
             count++;
         });
-        console.log(courseIds);
         return courseIds;
     }
 
@@ -376,7 +374,7 @@ class RegistrationTable extends React.Component {
     }
 
     removeClass = (key) => {
-        const { choseCourseMap, courses } = this.state;
+        const { choseCourseMap, courses, count } = this.state;
         choseCourseMap.delete(key);
         this.setState({choseCourseMap: choseCourseMap});
         // Find the course and put back the credit
@@ -384,6 +382,8 @@ class RegistrationTable extends React.Component {
             return course.courseId === key;
         })
         this.increaseCreditCount(deletedCourse[0].gradRequirementsThisCourseFulfills.subjectName, deletedCourse[0].courseCredit);
+        var countSubtract = count - 1;
+        this.setState({count: countSubtract})
     }
 
     renderListGroup = (chosenCourseNames) => {
@@ -396,11 +396,49 @@ class RegistrationTable extends React.Component {
         return listItems;
     }
 
+    renderConfirmedListGroup = (chosenCourseNames) => {
+        var listItems = [];
+        var itemCount = 0;
+        chosenCourseNames.forEach((value, key) => {
+            if(itemCount <= 3){
+                listItems.push(<ListGroup.Item key={key}>{value}
+                <Badge pill variant="primary">Confirmed</Badge>
+                </ListGroup.Item>)
+            }
+            else if(itemCount > 3){
+                listItems.push(<ListGroup.Item key={key}>{value}
+                <Button className="removeButton" variant="outline-danger" onClick={() => this.removeClass(key)}>Remove</Button>
+                </ListGroup.Item>)
+            }
+            itemCount++;
+        }); 
+        return listItems;
+    }
+
+    renderFinalListGroup = (chosenCourseNames) => {
+        var listItems = [];
+        var itemCount = 0;
+        chosenCourseNames.forEach((value, key) => {
+            if(itemCount <= 3){
+                listItems.push(<ListGroup.Item key={key}>{value}
+                <Badge pill variant="primary">Confirmed</Badge>
+                </ListGroup.Item>)
+            }
+            else if(itemCount > 3){
+                listItems.push(<ListGroup.Item key={key}>{value}
+                </ListGroup.Item>)
+            }
+            itemCount++;
+        }); 
+        return listItems;
+    }
+
+    confirmCoreSelection = () => {
+        this.setState({confirmedCore: true});
+    }
+
     render() {
-        const {courses, searchfield, count, hasSubmited, choseCourseMap} = this.state;
-        const filteredCourses = courses.filter(course => { 
-            return course.courseName.toLowerCase().includes(searchfield.toLocaleLowerCase());
-        })
+        const {courses, count, hasSubmited, choseCourseMap, confirmedCore, classSet} = this.state;
         if (courses.length === 0){
             return (
             <div className=''>
@@ -412,59 +450,135 @@ class RegistrationTable extends React.Component {
             return (
                 <div className='registrationTable'>
                     <div className='centerContent'>
-                        <p>Courses submitted click below to modify.</p>
-                        <ModifyRequest courses={courses} studentId={this.props.studentId}/>
+                        <h5>Courses submitted click below to modify.</h5>
+                        <p>If a course subject is already in your selection list then that course must be swapped with
+                        another course of the same subject.
+                        For example, if you have a Science course and a Language course in your selection list already, Chemistry can switch with Physics,
+                         but Physics cannot switch with Spanish. 
+                        Please keep this in mind when making your selections. However, this restriction does not apply for Fine Arts or Elective courses.</p>
+                        <ModifyRequest courses={courses} studentId={this.props.studentId} classSet={classSet}/>
                     </div>
                 </div>
                 );
         }
         else if (count >= 8) {
             return (
-                <div>
+                <div >
                     <div>
                         <Alert variant="success">
-                            All courses selected. Please submit now. You can modify at any point after submission.
+                            All courses selected. Please submit now confirm all your course selections. You can modify at any point after submission.
                         </Alert>
                     </div>
-                    <Card style={{ width: '18rem', margin: '25px' }}>
-                        <Card.Header>Selected Courses</Card.Header>
-                        <ListGroup variant="flush">
-                            { this.renderListGroup(choseCourseMap) }
-                        </ListGroup>
-                    </Card>
-                    <Button variant="info" onClick={this.submitCourses}>Submit Request</Button>
+                    <div className='registrationTable'>
+                        <div className='centerContent'>
+                            <Card style={{ width: '25rem', margin: '15px', textAlign: "left" }}>
+                                <Card.Header>Selected Courses</Card.Header>
+                                <ListGroup variant="flush">
+                                    { this.renderFinalListGroup(choseCourseMap) }
+                                </ListGroup>
+                            </Card>
+                            <Button variant="info" onClick={this.submitCourses}>Submit Request</Button>
+                        </div>
+                    </div>
                 </div>   
             );
         }
-        else {
+        else if (count > 3 && confirmedCore) {
+            const fineArtsOrElectives = courses.filter(course => { 
+                return ((course.gradRequirementsThisCourseFulfills.subjectName === "Fine Arts") 
+                || (course.gradRequirementsThisCourseFulfills.subjectName === "Electives"))
+            })
             return (
-                <div className=''>
+                <div>
                 <p>You must select <b>8</b> courses to register for the next school year.
                         The course options you are allowed to pick are based on your credits completed
                         versus how much you need to graduate. You can see that information in the <b>My Information </b> 
                         tab under the <b>Graduation Credits</b> table. We encourage you to look at the course catalog for more 
                         information on the courses offered. Happy pickings!</p>
-                <SearchBox searchChange={this.onSearchChange} searchBy='Search by Name'/>
-                <Card style={{ width: '18rem', margin: '15px' }}>
-                    <Card.Header>Selected Courses</Card.Header>
-                    <ListGroup variant="flush">
-                        { this.renderListGroup(choseCourseMap) }
-                    </ListGroup>
-                </Card>
-                <Table striped bordered hover>
-                    <thead>
-                        <tr>
-                            <th>Course Code</th>
-                            <th>Course Name</th>
-                            <th>Credit</th>
-                            <th>Subject Fulfillment</th>
-                            <th>Add To Worksheet</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        { this.renderTableData(filteredCourses) }
-                    </tbody>
-                </Table>
+                <h4>Next, choose 4 Fine Arts or Elective classes.</h4>
+                <div className="selectionSection">
+                    <Card style={{ width: '25rem', margin: '15px', textAlign: "left" }}>
+                        <Card.Header>Selected Courses</Card.Header>
+                        <ListGroup variant="flush">
+                            { this.renderConfirmedListGroup(choseCourseMap) }
+                        </ListGroup>
+                    </Card>
+                    <Card body>
+                        <Table striped bordered hover>
+                            <thead>
+                                <tr>
+                                    <th>Course Code</th>
+                                    <th>Course Name</th>
+                                    <th>Credit</th>
+                                    <th>Subject Fulfillment</th>
+                                    <th>Add To Worksheet</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                { this.renderTableData(fineArtsOrElectives) }
+                            </tbody>
+                        </Table>
+                    </Card>
+                </div>
+                </div>
+            );
+        }
+        else if(!confirmedCore && (count > 3)) {
+            return (
+                <div>
+                    <h4>Confirm this selection and move on to select elective and fine arts?</h4>
+                    <Card style={{ width: '25rem', margin: '15px', textAlign: "left" }}>
+                        <Card.Header>Selected Courses</Card.Header>
+                        <ListGroup variant="flush">
+                            { this.renderListGroup(choseCourseMap) }
+                        </ListGroup>
+                    </Card>
+                    <Button variant="outline-success" onClick={this.confirmCoreSelection}>Proceed</Button>
+                </div>
+            );
+        }
+        else {
+            const notFineArtsOrElectives = courses.filter(course => { 
+                return ((course.gradRequirementsThisCourseFulfills.subjectName === "Physical Education") 
+                || (course.gradRequirementsThisCourseFulfills.subjectName === "Math")
+                || (course.gradRequirementsThisCourseFulfills.subjectName === "Language")
+                || (course.gradRequirementsThisCourseFulfills.subjectName === "Science")
+                || (course.gradRequirementsThisCourseFulfills.subjectName === "Social Science")
+                || (course.gradRequirementsThisCourseFulfills.subjectName === "English")
+                || (course.gradRequirementsThisCourseFulfills.subjectName === "Health"))
+            });
+            return (
+                <div>
+                <p>You must select <b>8</b> courses to register for the next school year.
+                        The course options you are allowed to pick are based on your credits completed
+                        versus how much you need to graduate. You can see that information in the <b>My Information </b> 
+                        tab under the <b>Graduation Credits</b> table. We encourage you to look at the course catalog for more 
+                        information on the courses offered. Happy pickings!</p>
+                <h4>First, choose 4 core classes first.</h4>
+                <div className="selectionSection">
+                    <Card style={{ width: '25rem', margin: '15px', textAlign: "left" }}>
+                        <Card.Header>Selected Courses</Card.Header>
+                        <ListGroup variant="flush">
+                            { this.renderListGroup(choseCourseMap) }
+                        </ListGroup>
+                    </Card>
+                    <Card body>
+                        <Table striped bordered hover>
+                            <thead>
+                                <tr>
+                                    <th>Course Code</th>
+                                    <th>Course Name</th>
+                                    <th>Credit</th>
+                                    <th>Subject Fulfillment</th>
+                                    <th>Add To Worksheet</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                { this.renderTableData(notFineArtsOrElectives) }
+                            </tbody>
+                        </Table>
+                    </Card>
+                </div>
                 </div>
             );
         }

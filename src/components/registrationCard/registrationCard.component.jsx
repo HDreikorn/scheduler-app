@@ -21,7 +21,7 @@ class RegistrationCard extends React.Component {
         if(e.target.name === "newStart") {
             this.setState({startChanged: true});
         }
-        else {
+        if (e.target.name === "newEnd") {
             this.setState({endChanged: true});
         }
     }
@@ -79,8 +79,8 @@ class RegistrationCard extends React.Component {
             newDateObject.juniorWindowClose = newEnd;
         } 
         else if(grade === 10) {
-            newDateObject.sophmoreWindowOpen = newStart;
-            newDateObject.sophmoreWindowClose = newEnd;
+            newDateObject.sophomoreWindowOpen = newStart;
+            newDateObject.sophomoreWindowClose = newEnd;
         } 
         else if(grade === 9) {
             newDateObject.freshmanWindowOpen = newStart;

@@ -33,6 +33,8 @@ class StudentLogin extends Component {
       this.setState({studentId:''});
       this.setState({studentPassword:''});
       alert("Invalid login. Try again.");
+      window.location.reload(false);
+      this.setState({submitedLogin: false});
     })
   }
 
