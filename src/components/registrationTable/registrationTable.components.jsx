@@ -451,9 +451,11 @@ class RegistrationTable extends React.Component {
                 <div className='registrationTable'>
                     <div className='centerContent'>
                         <h5>Courses submitted click below to modify.</h5>
-                        <p>A course course must be swapped with another course of the same subject.
-                        For example, Chemistry can switch with Physics, but Physics cannot switch with Spanish. 
-                        Please keep this in mind when making your selections.</p>
+                        <p>If a course subject is already in your selection list then that course must be swapped with
+                        another course of the same subject.
+                        For example, if you have a Science course and a Language course in your selection list already, Chemistry can switch with Physics,
+                         but Physics cannot switch with Spanish. 
+                        Please keep this in mind when making your selections. However, this restriction does not apply for Fine Arts or Elective courses.</p>
                         <ModifyRequest courses={courses} studentId={this.props.studentId} classSet={classSet}/>
                     </div>
                 </div>

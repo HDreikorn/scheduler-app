@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import { Form, Button, Card, ListGroup } from 'react-bootstrap';
+import { Form, Button, Card, ListGroup, Spinner } from 'react-bootstrap';
 import './modifyCourseForm.styles.scss'
 
 class ModifyRequest extends Component {
@@ -24,6 +24,7 @@ class ModifyRequest extends Component {
       classSet: this.props.classSet,
       coreCount: '',
       courseRequestMap: new Map(),
+      isLoading: true
     }
   }
 
@@ -53,6 +54,7 @@ class ModifyRequest extends Component {
         this.setState({fineArtsCredits: data.fineArtsSummary.creditsNeeded});
         this.setState({electiveCredits: data.electiveSummary.creditsNeeded});
         this.setState({languageCredits: data.languageSummary.creditsNeeded});
+        this.setState({isLoading: false});
      })
      .catch( error => {
         console.log(error);
@@ -163,7 +165,7 @@ changeHandler = (e) => {
 
   submitHandler = (e) => {
     e.preventDefault();
-    const {courseRequestMap, courseSelected, courseToChange} = this.state;
+    const {courseRequestMap, courseSelected, courseToChange, modifyCore} = this.state;
     // Check that both items have been selected 
     if(!(courseSelected && courseToChange)) {
       alert("Please select make sure both items have a selected choice.");
@@ -174,45 +176,34 @@ changeHandler = (e) => {
       alert("Cannot add duplicate courses. Please pick another.");
       return;
     }
-    // Check if subject is in the request first
-    if(this.subjectExistsInRequest(parseInt(courseSelected))){
-      // Check if course is in request and same subject
-      if(!this.courseToChangeIsSameSubject(parseInt(courseSelected))){
-        alert("Cannot modify. You must swap a course subject with the same subject.");
-        return;
+    if(modifyCore){
+      // Check if subject is in the request first
+      if(this.subjectExistsInRequest(parseInt(courseSelected))){
+        // Check if course is in request and same subject
+        if(!this.courseToChangeIsSameSubject(parseInt(courseSelected))){
+          alert("Cannot modify. You must swap a course subject with the same subject.");
+          return;
+        }
+      }
+      else{
+        // Check if course not in request and enough credits
+        console.log(this.enoughSubjectCredits(parseInt(courseSelected)));
       }
     }
-    else{
-      // Check if course not in request and enough credits
-      console.log(this.enoughSubjectCredits(parseInt(courseSelected)));
-    }
-    
-    // TO DO: 
-    // - Make sure submit goes fine
-    // - Add a loading condition
-    // const {courseToChange, courseSelected} = this.state;
-    // var courseChangeObjectField = `course${courseToChange}`;
-    // var changeObject = {};
-    // changeObject[courseChangeObjectField] = parseInt(courseSelected);
-    // // Patch in newly selected course
-    // axios.patch('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/students/' + this.props.studentId + '/courseRequest', changeObject)
-    // .then(response => {
-    //   alert("success");
-    //   console.log(response);
-    //   // Get new schedule to display
-    //   fetch('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/students/' + this.props.studentId + '/courserequest')
-    //   .then( response => response.json())
-    //   .then(data => {
-    //     this.setState({courseRequest: data.courseRequest});
-    //   })
-    //   .catch( error => {
-    //     console.log(error);
-    //   })
-    // })
-    // .catch(error => {
-    //   console.log(error);
-    //   alert("Something went wrong.");
-    // })  
+
+    var courseChangeObjectField = `course${courseRequestMap.get(parseInt(courseToChange))}`;
+    var changeObject = {};
+    changeObject[courseChangeObjectField] = parseInt(courseSelected);
+
+    // Patch in newly selected course
+    axios.patch('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/students/' + this.props.studentId + '/courseRequest', JSON.stringify(changeObject))
+    .then(response => {
+      window.location.reload(false);
+    })
+    .catch(error => {
+      console.log(error);
+      alert("Something went wrong.");
+    })  
   }
 
   modifyCore = () => {
@@ -240,7 +231,7 @@ changeHandler = (e) => {
   });
     var courseOptions = [];
     coreCourses.forEach(element => {
-        courseOptions.push(<option value={element.courseId}>{element.courseName}</option>)
+        courseOptions.push(<option value={element.courseId}>{element.courseName} ({element.gradRequirementsThisCourseFulfills.subjectName}) </option>)
     }); 
     return courseOptions;
       
@@ -253,7 +244,7 @@ changeHandler = (e) => {
   });
     var courseOptions = [];
         coreCourses.forEach(element => {
-            courseOptions.push(<option value={element.courseId}>{element.courseName}</option>)
+            courseOptions.push(<option value={element.courseId}>{element.courseName} ({element.gradRequirementsThisCourseFulfills.subjectName})</option>)
         }); 
         return courseOptions;
   }
@@ -280,7 +271,7 @@ changeHandler = (e) => {
     });
     var courseOptions = [];
     coreCourses.forEach(element => {
-        courseOptions.push(<option value={element.courseId}>{element.courseName}</option>)
+        courseOptions.push(<option value={element.courseId}>{element.courseName} ({element.gradRequirementsThisCourseFulfills.subjectName})</option>)
     });
     return courseOptions;
   }
@@ -292,67 +283,44 @@ changeHandler = (e) => {
   });
     var courseOptions = [];
     coreCourses.forEach(element => {
-        courseOptions.push(<option value={element.courseId}>{element.courseName}</option>)
+        courseOptions.push(<option value={element.courseId}>{element.courseName} ({element.gradRequirementsThisCourseFulfills.subjectName})</option>)
     }); 
     return courseOptions;
   }
 
   render() {
-    const {courseRequest, modifyCore, modifyElective} = this.state;
-    if(!modifyCore && !modifyElective) {
+    const {courseRequest, modifyCore, modifyElective, isLoading} = this.state;
+    if(isLoading) {
       return (
-          <div className="modifyBody">
-            <div className="centerContent">
-              <Card style={{ width: '25rem', margin: '15px', textAlign: "left" }}>
-                <Card.Header>Selected Courses</Card.Header>
-                <ListGroup variant="flush">
-                    { this.renderFromSelectedListGroup(courseRequest) }
-                </ListGroup>
-              </Card>
-              <div>
-                <Button variant="info" onClick={this.modifyCore}>Modify <b>Core</b> Course</Button>
-                <Button variant="primary" onClick={this.modifyElective}>Modify <b>Elective/Fine Arts</b> Course</Button>
+        <div className="modifyBody">
+          <div className="centerContent">
+            <p>Loading...</p>
+            <Spinner animation="border" variant="info" />
+          </div>
+        </div>
+      );
+    }
+    else{
+      if(!modifyCore && !modifyElective) {
+        return (
+            <div className="modifyBody">
+              <div className="centerContent">
+                <Card style={{ width: '25rem', margin: '15px', textAlign: "left" }}>
+                  <Card.Header>Selected Courses</Card.Header>
+                  <ListGroup variant="flush">
+                      { this.renderFromSelectedListGroup(courseRequest) }
+                  </ListGroup>
+                </Card>
+                <div>
+                  <Button variant="info" onClick={this.modifyCore}>Modify <b>Core</b> Course</Button>
+                  <Button variant="primary" onClick={this.modifyElective}>Modify <b>Elective/Fine Arts</b> Course</Button>
+                </div>
               </div>
             </div>
-          </div>
-      );
-    }
-    else if(modifyCore){
-      return(
-      <div className="modifyBody"> 
-      <div className="centerContent">
-      <Card style={{ width: '25rem', margin: '15px', textAlign: "left" }}>
-          <Card.Header>Selected Courses</Card.Header>
-          <ListGroup variant="flush">
-              { this.renderFromSelectedListGroup(courseRequest) }
-          </ListGroup>
-      </Card>
-          <Card body>
-              <Form onSubmit={this.submitHandler}>
-              <Form.Group controlId="exampleForm.ControlSelect1">
-                <Form.Label>Course to change:</Form.Label>
-                <Form.Control as="select" onChange={this.changeHandler} name="courseToChange">
-                  <option>-Select Course Number-</option>
-                  { this.renderCoreNumberOptions(courseRequest) }
-                </Form.Control>
-              </Form.Group>
-              <Form.Group controlId="exampleForm.ControlSelect1">
-                <Form.Label>New Course:</Form.Label>
-                <Form.Control as="select" onChange={this.changeHandler} name="courseSelected">
-                  <option>-Select Course-</option>
-                  {this.renderCoreCourseOptions(this.props.courses)}
-                </Form.Control>
-              </Form.Group>
-              <Button variant="info" type="submit">Make Change</Button>
-            </Form>
-          </Card>
-          <Button variant="secondary" onClick={this.backToChoices}>Back to choices</Button>
-        </div>
-      </div>        
-      );
-    }
-    else if (modifyElective){
-      return(
+        );
+      }
+      else if(modifyCore){
+        return(
         <div className="modifyBody"> 
         <div className="centerContent">
         <Card style={{ width: '25rem', margin: '15px', textAlign: "left" }}>
@@ -362,28 +330,63 @@ changeHandler = (e) => {
             </ListGroup>
         </Card>
             <Card body>
-            <Form onSubmit={this.submitHandler}>
-              <Form.Group controlId="exampleForm.ControlSelect2">
-                <Form.Label>Course to change:</Form.Label>
-                <Form.Control as="select" onChange={this.changeHandler} name="courseToChange">
-                  <option>-Select Course Number-</option>
-                  { this.renderElectiveNumberOptions(courseRequest) }
-                </Form.Control>
-              </Form.Group>
-              <Form.Group controlId="exampleForm.ControlSelect1">
-                <Form.Label>New Course:</Form.Label>
-                <Form.Control as="select" onChange={this.changeHandler} name="courseSelected">
-                  <option>-Select Course-</option>
-                  {this.renderElectiveCourseOptions(this.props.courses)}
-                </Form.Control>
-              </Form.Group>
-              <Button variant="primary" type="submit">Make Change</Button>
-            </Form>
+                <Form onSubmit={this.submitHandler}>
+                <Form.Group controlId="exampleForm.ControlSelect1">
+                  <Form.Label>Course to change:</Form.Label>
+                  <Form.Control as="select" onChange={this.changeHandler} name="courseToChange">
+                    <option>-Select Course Number-</option>
+                    { this.renderCoreNumberOptions(courseRequest) }
+                  </Form.Control>
+                </Form.Group>
+                <Form.Group controlId="exampleForm.ControlSelect1">
+                  <Form.Label>New Course:</Form.Label>
+                  <Form.Control as="select" onChange={this.changeHandler} name="courseSelected">
+                    <option>-Select Course-</option>
+                    {this.renderCoreCourseOptions(this.props.courses)}
+                  </Form.Control>
+                </Form.Group>
+                <Button variant="info" type="submit">Make Change</Button>
+              </Form>
             </Card>
             <Button variant="secondary" onClick={this.backToChoices}>Back to choices</Button>
           </div>
-        </div>
-      );
+        </div>        
+        );
+      }
+      else if (modifyElective){
+        return(
+          <div className="modifyBody"> 
+          <div className="centerContent">
+          <Card style={{ width: '25rem', margin: '15px', textAlign: "left" }}>
+              <Card.Header>Selected Courses</Card.Header>
+              <ListGroup variant="flush">
+                  { this.renderFromSelectedListGroup(courseRequest) }
+              </ListGroup>
+          </Card>
+              <Card body>
+              <Form onSubmit={this.submitHandler}>
+                <Form.Group controlId="exampleForm.ControlSelect2">
+                  <Form.Label>Course to change:</Form.Label>
+                  <Form.Control as="select" onChange={this.changeHandler} name="courseToChange">
+                    <option>-Select Course Number-</option>
+                    { this.renderElectiveNumberOptions(courseRequest) }
+                  </Form.Control>
+                </Form.Group>
+                <Form.Group controlId="exampleForm.ControlSelect1">
+                  <Form.Label>New Course:</Form.Label>
+                  <Form.Control as="select" onChange={this.changeHandler} name="courseSelected">
+                    <option>-Select Course-</option>
+                    {this.renderElectiveCourseOptions(this.props.courses)}
+                  </Form.Control>
+                </Form.Group>
+                <Button variant="primary" type="submit">Make Change</Button>
+              </Form>
+              </Card>
+              <Button variant="secondary" onClick={this.backToChoices}>Back to choices</Button>
+            </div>
+          </div>
+        );
+      }
     }
   }
 }
