@@ -18,13 +18,15 @@ class AdminDash extends React.Component {
             percentStatus: '',
             totalStudents: '',
             totalSubmitted: '',
-            show: false
+            show: false,
+            isLoading: true
         }
     }
 
     componentDidMount() {
          this.getAdminData();
          this.getPercentStatus();
+         this.handleLoading();
     }
 
     getAdminData = () => {
@@ -91,10 +93,25 @@ class AdminDash extends React.Component {
         this.setState({show: false});
     }
 
+    handleLoading = () => {
+        this.setState({isLoading: false});
+    }
+
     render() {
-        const { username, firstName, lastName, percentStatus, totalStudents, totalSubmitted, show } = this.state;
+        const { username, firstName, lastName, percentStatus, totalStudents, totalSubmitted, show, isLoading } = this.state;
         var user = firstName + " " + lastName;
         var now = percentStatus;
+        if(isLoading) {
+            return(
+                <div className="adminBody">
+                    <div className="centerContent">
+                        <p>Loading...</p>
+                        <Spinner animation="border" variant="info" />
+                    </div>
+                </div>
+            );
+        }
+        else {
             return (
                 <div className='adminDash'>
                     <NaviBar username= {username} grade="administrator"/>
@@ -115,7 +132,7 @@ class AdminDash extends React.Component {
                         </Card>
                     </div>
                     <div className="registrationBoxes">
-                        <RegistrationList />
+                        <RegistrationList/>
                     </div>
                     <Accordion>
                         <Card>
@@ -167,6 +184,7 @@ class AdminDash extends React.Component {
 
                 </div>
             );
+        }
     }
 }
 

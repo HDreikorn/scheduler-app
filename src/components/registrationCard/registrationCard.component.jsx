@@ -57,8 +57,6 @@ class RegistrationCard extends React.Component {
             endYear = parseInt(splitEnd[2]);
         }
 
-        console.log(endYear + " " + startYear);
-
         if((endMonth < startMonth) && (endYear === startYear)){
             return false;
         }
