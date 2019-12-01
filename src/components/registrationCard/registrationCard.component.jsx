@@ -121,11 +121,11 @@ class RegistrationCard extends React.Component {
                 <Form onSubmit={this.handleModify} id="modify-date">
                     <Form.Group >
                         <Form.Label>New Start:</Form.Label>
-                        <Form.Control autoFocus type="date" name="newStart" onChange={this.handleChange}/>
+                        <Form.Control type="date" name="newStart" onChange={this.handleChange}/>
                     </Form.Group>
                     <Form.Group >
                         <Form.Label>New End:</Form.Label>
-                        <Form.Control autoFocus type="date" name="newEnd" onChange={this.handleChange}/>
+                        <Form.Control type="date" name="newEnd" onChange={this.handleChange}/>
                     </Form.Group>
                     <Button variant="info" onClick={this.handleModify}>Modify</Button>
                 </Form>
