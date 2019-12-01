@@ -5,7 +5,10 @@ import kids from './66209.jpg';
 
 class Homepage extends Component {
    componentDidMount(){
+      // wake up azure function
       fetch('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/healthcheck');
+      // wake up database
+      fetch('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/students');
    }
 
    render(props) {
