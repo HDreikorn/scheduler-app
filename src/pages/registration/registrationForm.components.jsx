@@ -1,5 +1,6 @@
 import React from 'react';
-import {Button, Spinner} from 'react-bootstrap';
+import axios from 'axios';
+import {Button, Spinner, Alert} from 'react-bootstrap';
 import NaviBar from '../../components/navbar/navbar.component';
 import NavTab from '../../components/navTabs/navTabs.component';
 import RegistrationTable from '../../components/registrationTable/registrationTable.components';
@@ -17,12 +18,14 @@ class RegistrationForm extends React.Component {
             isLoading: true,
             isValidRegistrationTime: '',
             openRegistration: '',
-            closeRegistration: ''
+            closeRegistration: '',
+            hasScheduleBuild: false
         }
     }
 
     componentDidMount() {
-         this.getStudentData();  
+         this.getStudentData(); 
+         this.getFinalScheduleData();
     }
 
     getStudentData = () => {
@@ -39,6 +42,17 @@ class RegistrationForm extends React.Component {
         .catch( error => {
            console.log(error);
         })  
+    }
+
+    getFinalScheduleData = () => {
+        axios.get('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/students/'
+         + this.props.match.params.studentId + '/schedule')
+         .then(response => {
+            this.setState({hasScheduleBuild: true});
+         })
+         .catch( error => {
+            console.log(error);
+         })
     }
 
     getCurrentStudentRegistrationWindow = (registrations, gradeInt) => {
@@ -115,12 +129,28 @@ class RegistrationForm extends React.Component {
 
     render() {
         const { studentId, firstName, lastName,
-                grade, hasCompletedCourseRequest, isLoading, isValidRegistrationTime} = this.state;
+                grade, hasCompletedCourseRequest, isLoading, isValidRegistrationTime, hasScheduleBuild} = this.state;
         var user = firstName + " " + lastName;
-
+        
         if(isLoading) {
             return(
                 <p>Loading<Spinner animation="grow" /></p>
+            );
+        }
+        else if (hasScheduleBuild) {
+            return (
+                <div>
+                    <div className='studentDash'>
+                        <NaviBar username= {user} grade= {grade} studentId={ studentId }/>
+                        <h1>Hello, { firstName}! Let's get you're schedule planning started.
+                            <Button variant="info" onClick={() => this.props.history.push('/')}>Logout</Button>
+                        </h1>
+                        <NavTab studentId={ studentId }/>
+                        <Alert variant="info" style={{ margin: '5rem' }}>
+                            Schedule has already been built. Click on the <b>My Schedule</b> tab to view it!
+                        </Alert>
+                    </div>
+                </div>
             );
         }
         else {

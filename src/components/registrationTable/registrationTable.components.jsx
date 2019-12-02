@@ -25,40 +25,48 @@ class RegistrationTable extends React.Component {
             languageCredits: "",
             classSet: this.props.classSet,
             confirmedCore: false,
-            confirmedElective: false
+            confirmedElective: false,
         }
     }
 
     componentDidMount() {
+        this.getCourseRequestData();
+        this.getCourseHistoryData();
+    }
+
+    getCourseRequestData = () => {
         // Get info of students who have registered for their courses
         fetch('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/students/' + this.props.studentId + '/courserequest')
         .then( response => response.json())
         .then(data => {
-           this.setState({hasSubmited: true});
+        this.setState({hasSubmited: true});
         })
         .catch( error => {
-           console.log(error);
+        console.log(error);
         })
+    }
+
+    getCourseHistoryData = () => {
         // Get course data
         fetch('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/students/' + this.props.studentId + '/coursehistory')
-         .then( response => response.json())
-         .then(data => {
-            this.setState({gradeLevel: data.gradeLevelInt});
-            this.setState({courses: data.eligibleCourses});
-            this.setState({mathCredits: data.mathSummary.creditsNeeded});
-            this.setState({englishCredits: data.englishSummary.creditsNeeded});
-            this.setState({socialScienceCredits: data.socialScienceSummary.creditsNeeded});
-            this.setState({scienceCredits: data.scienceSummary.creditsNeeded});
-            this.setState({physEdCredits: data.physicalEducationSummary.creditsNeeded});
-            this.setState({healthCredits: data.healthSummary.creditsNeeded});
-            this.setState({fineArtsCredits: data.fineArtsSummary.creditsNeeded});
-            this.setState({electiveCredits: data.electiveSummary.creditsNeeded});
-            this.setState({languageCredits: data.languageSummary.creditsNeeded});
-            this.getClassSet(this.state.gradeLevel);
-         })
-         .catch( error => {
-            console.log(error);
-         })
+        .then( response => response.json())
+        .then(data => {
+        this.setState({gradeLevel: data.gradeLevelInt});
+        this.setState({courses: data.eligibleCourses});
+        this.setState({mathCredits: data.mathSummary.creditsNeeded});
+        this.setState({englishCredits: data.englishSummary.creditsNeeded});
+        this.setState({socialScienceCredits: data.socialScienceSummary.creditsNeeded});
+        this.setState({scienceCredits: data.scienceSummary.creditsNeeded});
+        this.setState({physEdCredits: data.physicalEducationSummary.creditsNeeded});
+        this.setState({healthCredits: data.healthSummary.creditsNeeded});
+        this.setState({fineArtsCredits: data.fineArtsSummary.creditsNeeded});
+        this.setState({electiveCredits: data.electiveSummary.creditsNeeded});
+        this.setState({languageCredits: data.languageSummary.creditsNeeded});
+        this.getClassSet(this.state.gradeLevel);
+        })
+        .catch( error => {
+        console.log(error);
+        })
     }
 
     getClassSet = (gradeInt) => {
@@ -79,7 +87,6 @@ class RegistrationTable extends React.Component {
             this.setState({classSet:seniorSet});
         }
     }
-
 
     renderTableData(coursesToRender) {
         return coursesToRender.map((course, index) => {
