@@ -19,7 +19,8 @@ class AdminDash extends React.Component {
             totalStudents: '',
             totalSubmitted: '',
             show: false,
-            isLoading: true
+            isLoading: true,
+            showConfirm: false
         }
     }
 
@@ -97,8 +98,21 @@ class AdminDash extends React.Component {
         this.setState({isLoading: false});
     }
 
+    handleConfirmClose = () => {
+        this.setState({showConfirm: false});
+    }
+
+    handleConfirmDelete = () => {
+        this.setState({showConfirm: false});
+        this.handleDelete();
+    }
+
+    handleConfirmShow = () => {
+        this.setState({showConfirm: true});
+    }
+
     render() {
-        const { username, firstName, lastName, percentStatus, totalStudents, totalSubmitted, show, isLoading } = this.state;
+        const { username, firstName, lastName, percentStatus, totalStudents, totalSubmitted, show, isLoading, showConfirm } = this.state;
         var user = firstName + " " + lastName;
         var now = percentStatus;
         if(isLoading) {
@@ -125,7 +139,7 @@ class AdminDash extends React.Component {
                                 <Card.Title>{totalSubmitted} out of {totalStudents} students.</Card.Title>
                                     <ProgressBar animated now={now} label={`${now}%`}/>
                                     <div className="actionButtons">
-                                        <Button variant="outline-danger" onClick={this.handleDelete}>Delete All Schedules</Button>
+                                        <Button variant="outline-danger" onClick={this.handleConfirmShow}>Delete All Schedules</Button>
                                         <Button variant="outline-success" onClick={this.handleBuild}>Build All Schedules</Button>
                                     </div>
                             </Card.Body>
@@ -180,6 +194,21 @@ class AdminDash extends React.Component {
                         <Modal.Body>
                             <p>Please wait while the schedules build...</p>
                         </Modal.Body>
+                    </Modal>
+
+                    <Modal show={showConfirm} onHide={this.handleConfirmClose}>
+                        <Modal.Header closeButton>
+                        <Modal.Title>Confirm Delete</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>Are you sure you want to delete all schedule builds?</Modal.Body>
+                        <Modal.Footer>
+                        <Button variant="secondary" onClick={this.handleConfirmClose}>
+                            No
+                        </Button>
+                        <Button variant="danger" onClick={this.handleConfirmDelete}>
+                            Yes
+                        </Button>
+                        </Modal.Footer>
                     </Modal>
 
                 </div>
