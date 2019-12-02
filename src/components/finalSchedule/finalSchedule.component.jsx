@@ -37,8 +37,7 @@ class FinalScheduleTable extends React.Component {
 
     render() {
         const { fullList } = this.state;
-        let result = fullList.map(a => a.classPeriod + 1);
-        console.log(result);
+        fullList.map(a => a.classPeriod + 1);
         if (fullList.length === 0){
             return (
             <div>
