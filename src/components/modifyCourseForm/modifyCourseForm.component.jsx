@@ -191,9 +191,9 @@ changeHandler = (e) => {
       }
     }
 
-    var courseChangeObjectField = `course${courseRequestMap.get(parseInt(courseToChange))}`;
     var changeObject = {};
-    changeObject[courseChangeObjectField] = parseInt(courseSelected);
+    changeObject.oldCourse1 = courseToChange;
+    changeObject.newCourse1 = courseSelected;
 
     // Patch in newly selected course
     axios.patch('https://highschoolschedulingsystemapi20191019043201.azurewebsites.net/api/students/' + this.props.studentId + '/courseRequest', JSON.stringify(changeObject))
