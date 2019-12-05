@@ -142,7 +142,7 @@ class RegistrationForm extends React.Component {
                 <div>
                     <div className='studentDash'>
                         <NaviBar username= {user} grade= {grade} studentId={ studentId }/>
-                        <h1>Hello, { firstName}! Let's get you're schedule planning started.
+                        <h1>Hello, { firstName}! Let's get your schedule planning started.
                             <Button variant="info" onClick={() => this.props.history.push('/')}>Logout</Button>
                         </h1>
                         <NavTab studentId={ studentId }/>
@@ -158,7 +158,7 @@ class RegistrationForm extends React.Component {
                 return (
                     <div className='studentDash'>
                         <NaviBar username= {user} grade= {grade} studentId={ studentId }/>
-                        <h1>Hello, { firstName}! Let's get you're schedule planning started.
+                        <h1>Hello, { firstName}! Let's get your schedule planning started.
                             <Button variant="info" onClick={() => this.props.history.push('/')}>Logout</Button>
                         </h1>
                         <NavTab studentId={ studentId }/>
@@ -170,7 +170,7 @@ class RegistrationForm extends React.Component {
                 return (
                     <div className='studentDash'>
                         <NaviBar username= {user} grade= {grade} studentId={ studentId }/>
-                        <h1>Hello, { firstName}! Let's get you're schedule planning started.
+                        <h1>Hello, { firstName}! Let's get your schedule planning started.
                             <Button variant="info" onClick={() => this.props.history.push('/')}>Logout</Button>
                         </h1>
                         <NavTab studentId={ studentId }/>
