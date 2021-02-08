@@ -19,4 +19,4 @@ Project will connect with a .NET Core API and MySQL database, completed by teamm
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-Currently hosted using AWS amplify, [View Current Version Here](https://master.d97ty4t7tm56d.amplifyapp.com/).
+No longer hosted (previously using AWS amplify).
